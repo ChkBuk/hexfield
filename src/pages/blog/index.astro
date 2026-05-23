@@ -1,0 +1,92 @@
+---
+import SlidesLayout from '~/layouts/SlidesLayout.astro';
+import SiteSearch from '~/components/SiteSearch.astro';
+import { getCollection } from 'astro:content';
+import { SITE } from '~/config/site';
+import { breadcrumbSchema } from '~/lib/schema';
+
+const title = `Insights | ${SITE.name}`;
+const description = `Notes on forms digitalisation, full-stack development and SEO from ${SITE.legalName}.`;
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.publishedDate.getTime() - a.data.publishedDate.getTime());
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Insights', path: '/blog/' },
+];
+
+const fmt = new Intl.DateTimeFormat('en-AU', { day: 'numeric', month: 'long', year: 'numeric' });
+const slideCount = posts.length > 0 ? 3 : 2;
+---
+<SlidesLayout {title} {description} path="/blog/" schemas={[breadcrumbSchema(crumbs)]} {slideCount}>
+
+  <!-- ─── Slide 1: Hero + search (DARK) ───────────────────────────── -->
+  <section class="slide slide-dark" data-variant="dark">
+    <div class="slide-inner">
+      <div class="grid lg:grid-cols-12 gap-10 items-end mb-10">
+        <div class="lg:col-span-9">
+          <p class="slide-eyebrow">Insights</p>
+          <h1 class="h-display">Notes from<br/>the <span class="hl-pill">developer</span></h1>
+        </div>
+        <div class="lg:col-span-3">
+          <p class="lead mb-6" style="font-size: 1rem;">Short, opinionated writing on forms digitalisation, full-stack development, and SEO that actually moves the needle.</p>
+        </div>
+      </div>
+      <div style="max-width: 640px;">
+        <SiteSearch placeholder="Search the site…" />
+      </div>
+    </div>
+  </section>
+
+  {posts.length > 0 ? (
+    <section class="slide slide-tint" data-variant="tint">
+      <div class="slide-inner">
+        <div class="grid lg:grid-cols-12 gap-8 items-end mb-12">
+          <div class="lg:col-span-7">
+            <p class="slide-eyebrow">Recent posts</p>
+            <h2 class="h-display"><span class="hl-pill" style="background: #0F1014; color: #C8F031;">Latest</span><br/>writing</h2>
+          </div>
+          <div class="lg:col-span-5">
+            <p class="lead">Short reads on the practical side of building business systems.</p>
+          </div>
+        </div>
+        <ul class="grid gap-px md:grid-cols-3 list-none p-0 bg-graphite-900" style="border-radius: 18px; overflow: hidden;">
+          {posts.slice(0, 6).map((post) => (
+            <li><a href={`/blog/${post.slug}/`} class="dark-card no-underline" style="border-radius: 0; min-height: 240px;">
+              <p style="color: rgba(255,255,255,0.4); font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;">
+                <time datetime={post.data.publishedDate.toISOString()}>{fmt.format(post.data.publishedDate)}</time>
+              </p>
+              <h3>{post.data.title}</h3>
+              <div class="dark-card__divider"></div>
+              <p>{post.data.description}</p>
+              <span class="mt-auto inline-flex items-center gap-2 font-bold text-sm" style="color: #C8F031;">Read article →</span>
+            </a></li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  ) : (
+    <section class="slide slide-tint" data-variant="tint">
+      <div class="slide-inner text-center" style="display: grid; place-items: center;">
+        <p class="slide-eyebrow" style="justify-self: center;">Coming soon</p>
+        <h2 class="h-display mb-6">First post<br/>on the way</h2>
+        <p class="lead mb-10" style="margin-inline: auto;">In the meantime, the work itself is the best reference — have a look at the portfolio.</p>
+        <a href="/portfolio/" class="btn-pill-dark">See recent work</a>
+      </div>
+    </section>
+  )}
+
+  <section class="slide slide-dark" data-variant="dark">
+    <div class="slide-inner text-center" style="display: grid; place-items: center;">
+      <p class="slide-eyebrow" style="justify-self: center;">Subscribe</p>
+      <h2 class="h-display mb-6">Subscribe via<br/><span class="hl-pill">RSS</span></h2>
+      <p class="lead mb-10" style="margin-inline: auto;">No newsletter, no tracking. Just articles in your RSS reader as they're published.</p>
+      <div class="flex flex-wrap gap-3 justify-center">
+        <a href="/rss.xml" class="btn-pill-lime">RSS feed</a>
+        <a href="/contact/" class="btn-pill-ghost">Get in touch</a>
+      </div>
+    </div>
+  </section>
+
+</SlidesLayout>

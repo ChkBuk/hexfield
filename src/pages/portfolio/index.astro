@@ -1,0 +1,100 @@
+---
+import SlidesLayout from '~/layouts/SlidesLayout.astro';
+import { SITE } from '~/config/site';
+import { breadcrumbSchema } from '~/lib/schema';
+
+const title = `Portfolio | ${SITE.name}`;
+const description = 'Featured projects by NexCode IT Solutions — three production systems built and maintained solo across MERN, Java, Oracle and PostgreSQL.';
+
+const projects = [
+  {
+    name: 'tidyshines.com.au',
+    href: 'https://tidyshines.com.au',
+    type: 'Cleaning service website',
+    tech: ['MERN', 'SEO', 'Responsive design'],
+    desc: 'Lead-generation website for an Adelaide cleaning service. Server-rendered React, technical + local SEO, mobile-first responsive layout, conversion-optimised booking enquiry flow.',
+  },
+  {
+    name: 'euroheaven.com.au',
+    href: 'https://euroheaven.com.au',
+    type: 'Business tech solutions site',
+    tech: ['Java', 'PostgreSQL', 'Custom CMS'],
+    desc: 'Multi-page corporate site backed by a custom-built Java + Spring Boot CMS and PostgreSQL content store. Editor-friendly admin, role-based access, structured-data generation.',
+  },
+  {
+    name: 'pathikula.lk',
+    href: 'https://pathikula.lk',
+    type: 'Sri Lanka–based directory system',
+    tech: ['Full-stack', 'Oracle DB', 'Form digitization'],
+    desc: 'Searchable directory + digital form intake for a Sri Lankan organisation. Oracle backend, full-stack web front-end, digital forms replacing legacy paper workflows.',
+  },
+];
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Portfolio', path: '/portfolio/' },
+];
+
+// Hero + one slide per project + CTA.
+const slideCount = 1 + projects.length + 1;
+---
+<SlidesLayout {title} {description} path="/portfolio/" schemas={[breadcrumbSchema(crumbs)]} {slideCount}>
+
+  <!-- ─── Slide 1: Hero (DARK) ─────────────────────────────────────── -->
+  <section class="slide slide-dark" data-variant="dark">
+    <div class="slide-inner">
+      <div class="grid lg:grid-cols-12 gap-10 items-end">
+        <div class="lg:col-span-9">
+          <p class="slide-eyebrow">Featured projects</p>
+          <h1 class="h-display">Three production<br/>systems · All built<br/>and <span class="hl-pill">maintained solo</span></h1>
+        </div>
+        <div class="lg:col-span-3">
+          <p class="lead mb-6" style="font-size: 1rem;">Each project was scoped, built, deployed and is currently maintained by one developer — start to finish.</p>
+          <a href="#slide-2" data-slide-goto="1" class="btn-pill-lime">Browse projects</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Slide N: one per project (alternating tint/light) ───────── -->
+  {projects.map((p, i) => (
+    <section class:list={['slide', i % 2 === 0 ? 'slide-tint' : 'slide-light']} data-variant={i % 2 === 0 ? 'tint' : 'light'}>
+      <div class="slide-inner">
+        <div class="grid lg:grid-cols-12 gap-10 items-start">
+          <div class="lg:col-span-7">
+            <p class="slide-eyebrow">Project {String(i + 1).padStart(2, '0')} · {p.type}</p>
+            <h2 class="h-display mb-6">{p.name}</h2>
+            <p class="lead mb-8">{p.desc}</p>
+            <a href={p.href} rel="noopener" class="btn-pill-dark">
+              Visit the site
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M7 17 L17 7 M9 7 H17 V15" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+          </div>
+          <aside class="lg:col-span-5 dark-card">
+            <p class="slide-eyebrow" style="color: rgba(255,255,255,0.5); margin-bottom: 6px;">Tech used</p>
+            <ul class="space-y-2 mt-2 list-none p-0">
+              {p.tech.map((t) => <li class="lime-card__check" style="color: rgba(255,255,255,0.85); font-size: 0.95rem;">{t}</li>)}
+            </ul>
+            <div class="dark-card__divider mt-4"></div>
+            <p style="color: rgba(255,255,255,0.55); font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700;">Role</p>
+            <p style="color: rgba(255,255,255,0.85); font-size: 0.95rem;">Sole developer — design, build, deploy and support.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+  ))}
+
+  <!-- ─── Final slide: CTA (DARK) ──────────────────────────────────── -->
+  <section class="slide slide-dark" data-variant="dark">
+    <div class="slide-inner text-center" style="display: grid; place-items: center;">
+      <p class="slide-eyebrow" style="justify-self: center;">Your project next?</p>
+      <h2 class="h-display mb-6">Ready to <span class="hl-pill">build</span>?</h2>
+      <p class="lead mb-10" style="margin-inline: auto;">Free 30-minute scoping call — fixed-fee proposal within one business day.</p>
+      <div class="flex flex-wrap gap-3 justify-center">
+        <a href="/contact/" class="btn-pill-lime">Get a free quote</a>
+        <a href="/services/" class="btn-pill-ghost">See all services</a>
+      </div>
+    </div>
+  </section>
+
+</SlidesLayout>

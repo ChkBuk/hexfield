@@ -1,0 +1,45 @@
+---
+// Hexfield brand mark + optional wordmark. Single source of truth — used
+// in the Header and Footer; favicon, public logo and OG image use static
+// SVG copies that mirror this design.
+//
+// The mark paths are extracted from public/images/Frame 1.svg
+// (three layered geometric shapes; the dark background + cutout from the
+// source file are omitted so the mark adapts to any surrounding colour
+// via `currentColor`).
+export interface Props {
+  /** Render height of the mark in pixels. Width scales to match aspect. */
+  size?: number;
+  /** Show the "Hexfield" wordmark next to the mark. */
+  wordmark?: boolean;
+  /** Override colour — defaults to `currentColor`. */
+  color?: string;
+  /** Optional class hook for the wrapping element. */
+  class?: string;
+}
+
+const { size = 32, wordmark = true, color = 'currentColor', class: klass = '' } = Astro.props;
+// Mark viewBox is 540×1090 (taller than wide) — keep that aspect on render.
+const markWidth = Math.round(size * (540 / 1090));
+---
+<span class:list={['inline-flex items-end gap-0', klass]} aria-label="Hexfield">
+  <svg
+    width={markWidth}
+    height={size}
+    viewBox="1180 900 540 1090"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+    focusable="false"
+    fill={color}
+  >
+    <path d="M1581.5 987.512L1716.5 910V1386L1581.5 1461.5V987.512Z"/>
+    <path d="M1191 1257.82L1321 1188V1612L1191 1682V1257.82Z"/>
+    <path d="M1714.06 1446.78H1716.89V1941.08L1682.95 1925.05L1640.53 1901L1595.28 1874.28V1649.84L1564.17 1665.88L1490.64 1705.95L1439.73 1735.34L1298.33 1812L1408.62 1858.25V1978.48L1329.44 1933.06L1284.19 1909.02L1241.77 1884.97L1193.69 1858.25L1190.86 1855.58V1740.69L1216.31 1724.66L1298.33 1679.23L1388.83 1628.47L1541.55 1542.97L1680.12 1465.48L1714.06 1446.78Z"/>
+  </svg>
+  {wordmark && (
+    <span
+      class="font-bold tracking-tight"
+      style={`font-size: ${Math.round(size * 0.82)}px; color: inherit; margin-left: 2px; line-height: 1; padding-bottom: 0px;`}
+    >exfield</span>
+  )}
+</span>

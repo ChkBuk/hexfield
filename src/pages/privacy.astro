@@ -1,0 +1,62 @@
+---
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import { SITE } from '~/config/site';
+import { breadcrumbSchema } from '~/lib/schema';
+
+const title = `Privacy Policy | ${SITE.legalName}`;
+const description = `How ${SITE.legalName} collects, uses and protects your personal information under the Australian Privacy Act 1988.`;
+const lastUpdated = '2026-05-23';
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Privacy', path: '/privacy/' },
+];
+---
+<BaseLayout {title} {description} path="/privacy/" schemas={[breadcrumbSchema(crumbs)]}>
+  <Breadcrumbs items={crumbs} />
+  <article class="container-narrow section max-w-3xl prose-body">
+    <h1 class="h1 mb-2 text-ink-900 dark:text-ink-50">Privacy Policy</h1>
+    <p class="text-sm text-ink-500 mb-8">Last updated: {lastUpdated}</p>
+
+    <h2 class="h2 mt-10 mb-3 text-ink-900 dark:text-ink-50">1. About this policy</h2>
+    <p>{SITE.legalName} (ABN {SITE.abn} · ACN {SITE.acn}) is committed to protecting your personal information in accordance with the
+      <em>Privacy Act 1988</em> (Cth) and the Australian Privacy Principles (APPs).
+      This policy explains how we collect, use, disclose and protect personal information.</p>
+
+    <h2 class="h2 mt-10 mb-3 text-ink-900 dark:text-ink-50">2. What we collect</h2>
+    <p>We collect personal information you provide voluntarily through our contact form or by emailing us, including: your name,
+      email, company, the service you're interested in, the description of your project, and any file you choose to attach. We do
+      not use third-party analytics, advertising cookies, or trackers on this website.</p>
+
+    <h2 class="h2 mt-10 mb-3 text-ink-900 dark:text-ink-50">3. How we use it</h2>
+    <p>We use your personal information to respond to your enquiry, deliver services you have requested, and meet our
+      legal obligations. We will not use your information for direct marketing without your express consent.</p>
+
+    <h2 class="h2 mt-10 mb-3 text-ink-900 dark:text-ink-50">4. Disclosure</h2>
+    <p>We do not sell or rent your personal information. We may share it with trusted service providers (for example, our
+      form-handling and email infrastructure) strictly to deliver our services to you. Personal data is processed either in
+      Australia or by providers contractually bound to equivalent protections.</p>
+
+    <h2 class="h2 mt-10 mb-3 text-ink-900 dark:text-ink-50">5. Storage and security</h2>
+    <p>We hold personal information using reasonable physical, technical and administrative safeguards. Submissions via our
+      contact form are stored in Australian-hosted infrastructure where practicable.</p>
+
+    <h2 class="h2 mt-10 mb-3 text-ink-900 dark:text-ink-50">6. Access and correction</h2>
+    <p>You may request access to, or correction of, your personal information at any time by emailing
+      <a href={`mailto:${SITE.email}`}>{SITE.email}</a>. We will respond within 30 days.</p>
+
+    <h2 class="h2 mt-10 mb-3 text-ink-900 dark:text-ink-50">7. Complaints</h2>
+    <p>If you believe we have breached the APPs, please contact us first at <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.
+      If you are not satisfied with our response, you may contact the Office of the Australian Information Commissioner
+      at <a href="https://www.oaic.gov.au" rel="noopener">oaic.gov.au</a>.</p>
+
+    <h2 class="h2 mt-10 mb-3 text-ink-900 dark:text-ink-50">8. Contact</h2>
+    <address class="not-italic">
+      {SITE.legalName}<br>
+      {SITE.address.street}<br>
+      {SITE.address.locality} {SITE.address.region} {SITE.address.postalCode}<br>
+      Email: <a href={`mailto:${SITE.email}`}>{SITE.email}</a><br>
+      Phone: <a href={`tel:${SITE.phoneTel}`}>{SITE.phoneDisplay}</a>
+    </address>
+  </article>
+</BaseLayout>

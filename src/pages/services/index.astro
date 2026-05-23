@@ -1,0 +1,136 @@
+---
+import SlidesLayout from '~/layouts/SlidesLayout.astro';
+import { SITE } from '~/config/site';
+import { breadcrumbSchema } from '~/lib/schema';
+
+const title = `Services | ${SITE.name}`;
+const description = 'Forms digitalisation, web design, web development (MERN + Java), system design and SEO — delivered solo by NexCode IT Solutions in Adelaide.';
+
+const services = [
+  {
+    num: '01',
+    anchor: 'forms',
+    title: 'Forms Digitalization',
+    blurb: 'Say goodbye to paper. Physical and PDF forms become smart, fillable digital systems with automated data capture.',
+    points: [
+      'Convert paper / PDF forms to web-based smart forms',
+      'Auto-validation, e-signatures and data export',
+      'Secure storage on PostgreSQL or Oracle',
+      'Ideal for healthcare, education, logistics and government suppliers',
+    ],
+  },
+  {
+    num: '02',
+    anchor: 'web-design',
+    title: 'Web Design',
+    blurb: 'UI/UX-focused, mobile-first design that loads fast, ranks well and converts visitors.',
+    points: [
+      'UI/UX focused, mobile-first design',
+      'Fast loading, accessible, conversion-driven',
+      'Built with modern frameworks',
+      'Accessibility (WCAG 2.1 AA) baseline',
+    ],
+  },
+  {
+    num: '03',
+    anchor: 'web',
+    title: 'Web Development — MERN & Java',
+    blurb: 'Production-grade web applications — single-page apps and enterprise backends, by the same hands that designed them.',
+    points: [
+      'MERN: Mongo, Express, React, Node — dynamic SPAs and portals',
+      'Java with Spring Boot for enterprise-grade backend',
+      'REST APIs, authentication, payments and admin dashboards',
+      'CI/CD setup and production deployment',
+    ],
+  },
+  {
+    num: '04',
+    anchor: 'systems',
+    title: 'System Design & Development',
+    blurb: 'End-to-end custom business systems — from data model to production deployment.',
+    points: [
+      'End-to-end custom software architecture',
+      'Database design (Oracle, PostgreSQL)',
+      'Scalable, secure and documented systems',
+      'Integration with existing tools and APIs',
+    ],
+  },
+  {
+    num: '05',
+    anchor: 'seo',
+    title: 'SEO',
+    blurb: 'On-page, technical and local SEO that grows organic traffic without paid ads.',
+    points: [
+      'On-page, technical and local SEO',
+      'Adelaide-focused or global keyword strategy',
+      'Structured data, Core Web Vitals, sitemap + GSC setup',
+      'Improve search ranking organically — no paid ad dependency',
+    ],
+  },
+];
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Services', path: '/services/' },
+];
+
+// One slide per service + hero + CTA.
+const slideCount = 1 + services.length + 1;
+---
+<SlidesLayout {title} {description} path="/services/" schemas={[breadcrumbSchema(crumbs)]} {slideCount}>
+
+  <!-- ─── Slide 1: Hero (DARK) ─────────────────────────────────────── -->
+  <section class="slide slide-dark" data-variant="dark">
+    <div class="slide-inner">
+      <div class="grid lg:grid-cols-12 gap-10 items-end">
+        <div class="lg:col-span-9">
+          <p class="slide-eyebrow">What I offer</p>
+          <h1 class="h-display">Five services<br/>One <span class="hl-pill">developer</span><br/>End-to-end</h1>
+        </div>
+        <div class="lg:col-span-3">
+          <p class="lead mb-6" style="font-size: 1rem;">From smart digital forms to enterprise web apps — built, deployed and maintained by the same person.</p>
+          <a href="/contact/" class="btn-pill-lime">Get a free quote</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Slide 2..6: one per service ──────────────────────────────── -->
+  {services.map((s, i) => (
+    <section class:list={['slide', i % 2 === 0 ? 'slide-tint' : 'slide-light']} data-variant={i % 2 === 0 ? 'tint' : 'light'} id={s.anchor}>
+      <div class="slide-inner">
+        <div class="grid lg:grid-cols-12 gap-10 items-start">
+          <div class="lg:col-span-5">
+            <p class="slide-eyebrow">{s.num} · Service</p>
+            <h2 class="h-display">{s.title}</h2>
+            <p class="lead mt-6">{s.blurb}</p>
+            <a href="/contact/" class="btn-pill-dark mt-8">
+              Discuss this service
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M7 17 L17 7 M9 7 H17 V15" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+          </div>
+          <aside class="lg:col-span-7 dark-card" style="min-height: 280px;">
+            <p class="slide-eyebrow" style="color: rgba(255,255,255,0.5); margin-bottom: 6px;">What's included</p>
+            <ul class="space-y-3 mt-2 list-none p-0">
+              {s.points.map((p) => <li class="lime-card__check" style="color: rgba(255,255,255,0.85); font-size: 0.95rem;">{p}</li>)}
+            </ul>
+          </aside>
+        </div>
+      </div>
+    </section>
+  ))}
+
+  <!-- ─── Final slide: CTA (DARK) ──────────────────────────────────── -->
+  <section class="slide slide-dark" data-variant="dark">
+    <div class="slide-inner text-center" style="display: grid; place-items: center;">
+      <p class="slide-eyebrow" style="justify-self: center;">Ready to scope?</p>
+      <h2 class="h-display mb-6">Tell me what<br/>you want to <span class="hl-pill">build</span></h2>
+      <p class="lead mb-10" style="margin-inline: auto;">Free 30-minute scoping call. Fixed-fee proposal in writing within one business day.</p>
+      <div class="flex flex-wrap gap-3 justify-center">
+        <a href="/contact/" class="btn-pill-lime">Get a free quote</a>
+        <a href="/portfolio/" class="btn-pill-ghost">See recent work</a>
+      </div>
+    </div>
+  </section>
+
+</SlidesLayout>

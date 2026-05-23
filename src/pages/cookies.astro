@@ -1,0 +1,52 @@
+---
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import { SITE } from '~/config/site';
+import { breadcrumbSchema } from '~/lib/schema';
+
+const title = `Cookie Policy | ${SITE.legalName}`;
+const description = `How ${SITE.legalName} uses cookies and similar technologies on this website.`;
+const lastUpdated = '2026-05-24';
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Cookies', path: '/cookies/' },
+];
+---
+<BaseLayout {title} {description} path="/cookies/" schemas={[breadcrumbSchema(crumbs)]}>
+  <Breadcrumbs items={crumbs} />
+  <article class="container-narrow section max-w-3xl prose-body">
+    <h1 class="h1 mb-2 text-ink-900 dark:text-ink-50">Cookie Policy</h1>
+    <p class="text-sm text-ink-500 mb-8">Last updated: {lastUpdated}</p>
+
+    <h2 class="h2 mt-10 mb-3 text-ink-900 dark:text-ink-50">1. About cookies</h2>
+    <p>Cookies are small text files that websites place on your device to remember information about you,
+      your preferences and your usage. This policy explains how {SITE.legalName} (ABN {SITE.abn}) uses
+      cookies on this website.</p>
+
+    <h2 class="h2 mt-10 mb-3 text-ink-900 dark:text-ink-50">2. Cookies we use</h2>
+    <p>This website is deliberately <strong>tracker-free</strong>. We do not use:</p>
+    <ul class="list-disc pl-6 space-y-1">
+      <li>Third-party analytics cookies (no Google Analytics, no Plausible, no Mixpanel)</li>
+      <li>Advertising cookies</li>
+      <li>Social-media tracking pixels</li>
+      <li>Session-replay tools</li>
+    </ul>
+    <p>The only request your browser makes to a third-party domain is for the Pagefind search assets, which
+      are served from the same origin as this website (no cross-site tracking).</p>
+
+    <h2 class="h2 mt-10 mb-3 text-ink-900 dark:text-ink-50">3. Functional storage</h2>
+    <p>The mobile hamburger menu uses a hidden HTML checkbox to track open/closed state. This is stored
+      in-memory by your browser only and is not persisted between page loads or shared with any third party.</p>
+
+    <h2 class="h2 mt-10 mb-3 text-ink-900 dark:text-ink-50">4. Form submissions</h2>
+    <p>When you submit the contact form, the data is transmitted to our form-handling infrastructure for
+      processing. Submission data is covered by our <a href="/privacy/">Privacy Policy</a>.</p>
+
+    <h2 class="h2 mt-10 mb-3 text-ink-900 dark:text-ink-50">5. Your choices</h2>
+    <p>Because we do not set tracking cookies, there is nothing for you to opt out of. You may clear any
+      cookies via your browser settings at any time without affecting site functionality.</p>
+
+    <h2 class="h2 mt-10 mb-3 text-ink-900 dark:text-ink-50">6. Contact</h2>
+    <p>Questions? Email <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.</p>
+  </article>
+</BaseLayout>

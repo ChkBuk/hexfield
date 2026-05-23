@@ -1,0 +1,67 @@
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Cancel superseded runs on the same branch.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-audit:
+    name: Build + Lighthouse budget
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck (astro check)
+        run: npm run typecheck
+
+      - name: Build site
+        run: npm run build
+
+      - name: Smoke-check critical artifacts exist
+        run: |
+          test -f dist/index.html || (echo "❌ dist/index.html missing" && exit 1)
+          test -f dist/sitemap-index.xml || (echo "❌ sitemap-index.xml missing" && exit 1)
+          test -f dist/robots.txt || (echo "❌ robots.txt missing" && exit 1)
+          test -f dist/rss.xml || (echo "❌ rss.xml missing" && exit 1)
+          test -f dist/locations/sydney/index.html || (echo "❌ sydney landing page missing" && exit 1)
+          test -f dist/services/managed-it/index.html || (echo "❌ managed-it service page missing" && exit 1)
+          test -f dist/security/index.html || (echo "❌ security trust page missing" && exit 1)
+          echo "✅ all critical artifacts present"
+
+      - name: Check internal links (no 404 hrefs in dist)
+        run: node scripts/check-internal-links.mjs
+
+      - name: Verify per-page JSON-LD blocks
+        run: |
+          set -e
+          home_ld=$(grep -o 'application/ld+json' dist/index.html | wc -l)
+          svc_ld=$(grep -o 'application/ld+json' dist/services/managed-it/index.html | wc -l)
+          city_ld=$(grep -o 'application/ld+json' dist/locations/sydney/index.html | wc -l)
+          echo "Home JSON-LD blocks: $home_ld (expect ≥ 4)"
+          echo "Service JSON-LD blocks: $svc_ld (expect ≥ 5)"
+          echo "City JSON-LD blocks: $city_ld (expect ≥ 5)"
+          [ "$home_ld" -ge 4 ] || (echo "❌ home JSON-LD short" && exit 1)
+          [ "$svc_ld" -ge 5 ] || (echo "❌ service JSON-LD short" && exit 1)
+          [ "$city_ld" -ge 5 ] || (echo "❌ city JSON-LD short" && exit 1)
+
+      - name: Serve dist + Lighthouse audit
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          configPath: ./.github/lighthouse/lighthouserc.json
+          uploadArtifacts: true
+          temporaryPublicStorage: true

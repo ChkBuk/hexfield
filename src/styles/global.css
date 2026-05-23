@@ -1,0 +1,1192 @@
+/* Roboto — only the Latin subset is loaded (sufficient for en-AU). 400/700
+   cover body + bold UI; 500 is the true-medium used by the top nav-links;
+   900 covers the .h-display headings which request weight 800 (Roboto
+   skips 800, so 900 is the nearest available). */
+@import '@fontsource/roboto/latin-400.css';
+@import '@fontsource/roboto/latin-500.css';
+@import '@fontsource/roboto/latin-700.css';
+@import '@fontsource/roboto/latin-900.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-ink-50 text-ink-900 font-sans antialiased;
+  }
+  @media (prefers-color-scheme: dark) {
+    body { @apply bg-ink-950 text-ink-50; }
+  }
+  /* Default link colour applies to subpages using BaseLayout (privacy, security,
+     blog posts, etc.). Slide-deck pages override this below. */
+  a { @apply text-brand-700 underline-offset-2 hover:underline; }
+  @media (prefers-color-scheme: dark) {
+    a { @apply text-brand-500; }
+  }
+  :focus-visible {
+    @apply outline-none ring-2 ring-brand-700 ring-offset-2 ring-offset-white rounded-sm;
+  }
+  @media (prefers-color-scheme: dark) {
+    :focus-visible { @apply ring-offset-ink-950; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+}
+
+@layer components {
+  .container-narrow { @apply max-w-6xl mx-auto px-4 sm:px-6 lg:px-8; }
+  .section { @apply py-16 md:py-24; }
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-lg bg-brand-700 hover:bg-brand-500 text-white font-semibold px-5 py-3 no-underline transition;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-lg border border-ink-200 text-ink-900 hover:bg-white font-semibold px-5 py-3 no-underline transition;
+  }
+  @media (prefers-color-scheme: dark) {
+    .btn-secondary { @apply border-ink-700 text-ink-50 hover:bg-ink-900; }
+  }
+  .card {
+    @apply rounded-2xl border border-ink-200 bg-white p-6 shadow-sm;
+  }
+  @media (prefers-color-scheme: dark) {
+    .card { @apply bg-[#111827] border-[#1F2937]; }
+  }
+  .input {
+    @apply w-full rounded-lg border border-ink-200 bg-white px-4 py-3 text-ink-900 focus:border-brand-700;
+  }
+  @media (prefers-color-scheme: dark) {
+    .input { @apply bg-[#111827] border-[#1F2937] text-ink-50; }
+  }
+  .h1 { @apply font-bold tracking-tight; font-size: clamp(2.25rem, 4vw, 3.5rem); line-height: 1.1; letter-spacing: -0.02em; }
+  .h2 { @apply font-bold tracking-tight; font-size: clamp(1.75rem, 3vw, 2.5rem); line-height: 1.15; }
+  .h3 { @apply font-bold; font-size: clamp(1.25rem, 2vw, 1.5rem); line-height: 1.25; }
+  .prose-body { @apply text-ink-700 leading-relaxed; max-width: 65ch; }
+  @media (prefers-color-scheme: dark) {
+    .prose-body { @apply text-ink-200; }
+  }
+}
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0;
+  margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+.focus\:not-sr-only:focus, .focus-visible\:not-sr-only:focus-visible {
+  position: static; width: auto; height: auto; padding: 0.5rem 1rem;
+  margin: 0.5rem; overflow: visible; clip: auto; white-space: normal;
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Slide deck (homepage + nav pages — scoped via `.slides-body` on <body>).
+   Theme: lime accent + near-black + white (Axios-inspired).
+   Subpages still using BaseLayout are unaffected.
+   ────────────────────────────────────────────────────────────────── */
+
+.slides-body {
+  margin: 0;
+  height: 100dvh;
+  height: 100vh;
+  overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: pan-x;
+  background: #FFFFFF;
+  color: #0F1014;
+}
+
+/* Default link styling inside slide pages — inherit colour from parent, no
+   auto-underline. Buttons (.btn-pill-*, .cta-badge, .mute-btn-*) and named
+   navigation elements set their own colour and ignore this. Cards
+   (.lime-card / .dark-card) that are themselves anchors also inherit
+   so their inner H3 / paragraphs / lists don't turn blue on hover/focus. */
+.slides-body a:not([class*="btn-"]):not(.cta-badge):not(.mute-btn-primary):not(.mute-btn-secondary):not(.brand-link):not(.nav-link):not(.hexform__submit) {
+  color: inherit;
+  text-decoration: none;
+}
+.slides-body a:not([class*="btn-"]):not(.cta-badge):not(.mute-btn-primary):not(.mute-btn-secondary):not(.brand-link):not(.nav-link):not(.hexform__submit):hover,
+.slides-body a:not([class*="btn-"]):not(.cta-badge):not(.mute-btn-primary):not(.mute-btn-secondary):not(.brand-link):not(.nav-link):not(.hexform__submit):focus,
+.slides-body a:not([class*="btn-"]):not(.cta-badge):not(.mute-btn-primary):not(.mute-btn-secondary):not(.brand-link):not(.nav-link):not(.hexform__submit):active,
+.slides-body a:not([class*="btn-"]):not(.cta-badge):not(.mute-btn-primary):not(.mute-btn-secondary):not(.brand-link):not(.nav-link):not(.hexform__submit):visited {
+  text-decoration: none;
+  color: inherit;
+}
+/* Card anchors specifically — no underline on any state, ever. */
+.slides-body a.dark-card,
+.slides-body a.lime-card,
+.slides-body a.dark-card *,
+.slides-body a.lime-card * {
+  text-decoration: none !important;
+}
+
+.slides-header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 clamp(16px, 4vw, 40px);
+  z-index: 60;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid #E5E7EB;
+}
+/* Default header (light slides) */
+.slides-header .nav-link {
+  color: #0F1014;
+  opacity: 0.82;
+  font-size: 15px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: opacity 150ms ease, color 150ms ease;
+}
+.slides-header .nav-link:hover { opacity: 1; color: #0F1014; }
+.slides-header .brand-link,
+.slides-header .mobile-menu-btn { color: #0F1014; }
+
+/* Header inverts when over a dark hero slide */
+.slides-body.slide-dark-active .slides-header {
+  background: rgba(15, 16, 20, 0.85);
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+.slides-body.slide-dark-active .slides-header .nav-link  { color: #FFFFFF; opacity: 0.78; }
+.slides-body.slide-dark-active .slides-header .nav-link:hover { color: #C8F031; opacity: 1; }
+.slides-body.slide-dark-active .slides-header .brand-link,
+.slides-body.slide-dark-active .slides-header .mobile-menu-btn { color: #FFFFFF; }
+
+.slides-viewport {
+  position: relative;
+  width: 100vw;
+  height: 100dvh;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.slides-track {
+  display: flex;
+  flex-wrap: nowrap;
+  width: max-content;
+  height: 100%;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+}
+
+.slide {
+  flex: 0 0 100vw;
+  width: 100vw;
+  height: 100dvh;
+  height: 100vh;
+  display: grid;
+  align-content: center;
+  padding: 96px clamp(20px, 6vw, 80px) 112px;
+  overflow: hidden;
+  position: relative;
+}
+
+.slide-inner {
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+/* Section variants — base bg + text colour set here, headings/lead handled
+   below the base typography block (with higher specificity) so they win. */
+.slide-light { background: #FFFFFF; color: #0F1014; }
+.slide-tint  { background: #C8F031; color: #0F1014; }   /* full lime band (Nisoz pattern) */
+.slide-soft  { background: #F2F8E0; color: #0F1014; }   /* pale lime band, optional */
+.slide-dark  {
+  background: #0F1014;
+  color: #FFFFFF;
+  background-image:
+    radial-gradient(ellipse 80% 60% at 20% 30%, rgba(200, 240, 49, 0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 60% at 80% 70%, rgba(200, 240, 49, 0.04) 0%, transparent 70%);
+}
+
+/* Hero slide reserves extra room at the bottom for the absolutely-
+   positioned marquee that lives only on slide 1 of the homepage. */
+.slide.hero-slide { padding-bottom: 168px; }
+
+/* Decorative slide-corner accents removed at user request. The .has-accent
+   class is kept harmless so pages that still declare it don't break. */
+
+/* Eyebrow label */
+.slide-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: #6B6E73;
+  margin-bottom: 18px;
+}
+.slide-eyebrow::before {
+  content: '';
+  width: 28px; height: 2px;
+  background: #C8F031;
+  border-radius: 2px;
+}
+/* On lime (slide-tint) slides the lime dash is invisible on lime bg —
+   swap to dark so the dash reads cleanly. */
+.slide.slide-tint .slide-eyebrow::before { background: #0F1014; }
+.slide-dark .slide-eyebrow { color: rgba(255, 255, 255, 0.65); }
+
+.slide h1, .slide h2 {
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.02;
+}
+.slide h1 { font-size: clamp(2.75rem, 7vw, 6rem); }
+.slide h2 { font-size: clamp(2.25rem, 5vw, 4rem); }
+
+/* Nisoz-style display headline: UPPERCASE, tighter tracking, stacked.
+   line-height ≥ 1.05 so that .hl-pill's per-line background rectangles
+   (box-decoration-break: clone) don't overlap adjacent lines.
+   Note: hyphens disabled — auto-hyphenation produces ugly breaks like
+   MAS-TERY. Words may overflow on extreme viewports; that's preferable
+   to mid-word breaks. */
+.slide h1.h-display, .slide h2.h-display {
+  text-transform: uppercase;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+  font-weight: 800;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: manual;
+  -webkit-hyphens: manual;
+}
+.slide h1.h-display { font-size: clamp(2.5rem, 6.5vw, 5.5rem); }
+.slide h2.h-display { font-size: clamp(2rem, 5vw, 4rem); }
+.slide p.lead {
+  font-size: clamp(1rem, 1.3vw, 1.2rem);
+  max-width: 56ch;
+  line-height: 1.55;
+}
+
+/* Variant text colour. Higher specificity (.slide.slide-X) than the base
+   `.slide h1` rule so order-in-file no longer matters. */
+.slide.slide-light h1, .slide.slide-light h2, .slide.slide-light h3 { color: #0F1014; }
+.slide.slide-tint  h1, .slide.slide-tint  h2, .slide.slide-tint  h3 { color: #0F1014; }
+.slide.slide-dark  h1, .slide.slide-dark  h2, .slide.slide-dark  h3 { color: #FFFFFF; }
+.slide.slide-light p.lead { color: #2D2F36; }
+.slide.slide-tint  p.lead { color: #2D2F36; }
+.slide.slide-dark  p.lead { color: rgba(255, 255, 255, 0.82); }
+
+/* ── Lime highlight behind selected words ──────────────────────
+   Tight wrap, modest rounding, no rotation — reads as an underline-style
+   highlight rather than a giant pill blob. Allows the highlighted text to
+   wrap when it would otherwise overflow its column. */
+.hl-pill {
+  display: inline;
+  background: #C8F031;
+  color: #0F1014;
+  padding: 0 0.12em;
+  border-radius: 0.12em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+/* Variant if a fully-rounded "pill" look is wanted explicitly */
+.hl-pill.is-rounded {
+  display: inline-block;
+  padding: 0.02em 0.22em 0.06em;
+  border-radius: 999px;
+  line-height: 1.05;
+}
+
+/* ── Marquee / ticker band ────────────────────────────────────── */
+.marquee {
+  width: 100vw;
+  background: #C8F031;
+  color: #0F1014;
+  overflow: hidden;
+  border-block: 1px solid rgba(15, 16, 20, 0.08);
+}
+.marquee__track {
+  display: flex;
+  gap: 56px;
+  align-items: center;
+  padding: 18px 28px;
+  width: max-content;
+  animation: marquee-scroll 28s linear infinite;
+  font-weight: 700;
+  font-size: 18px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.marquee__track:hover { animation-play-state: paused; }
+.marquee__item { display: inline-flex; align-items: center; gap: 56px; }
+.marquee__star {
+  width: 18px; height: 18px;
+  flex-shrink: 0;
+  display: inline-block;
+}
+@keyframes marquee-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee__track { animation: none; }
+}
+
+/* ── Circular "SINCE 20XX" badge with curved text ───────────────── */
+.since-badge {
+  position: relative;
+  width: 132px;
+  height: 132px;
+  display: inline-grid;
+  place-items: center;
+}
+.since-badge__ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  animation: since-spin 22s linear infinite;
+}
+@keyframes since-spin {
+  to { transform: rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .since-badge__ring { animation: none; }
+}
+.since-badge__core {
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  background: #C8F031;
+  display: grid;
+  place-items: center;
+  color: #0F1014;
+}
+
+/* Larger circular CTA — lime ring with curved text + lime core with arrow.
+   Same pattern as .since-badge but reusable as an interactive CTA element. */
+.cta-badge {
+  position: relative;
+  width: 168px;
+  height: 168px;
+  display: inline-grid;
+  place-items: center;
+  text-decoration: none;
+  color: #0F1014;
+  transition: transform 200ms ease;
+}
+.cta-badge:hover { transform: rotate(8deg); }
+.cta-badge__ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  animation: since-spin 22s linear infinite;
+}
+.cta-badge__core {
+  width: 84px;
+  height: 84px;
+  border-radius: 999px;
+  background: #C8F031;
+  display: grid;
+  place-items: center;
+  color: #0F1014;
+}
+.cta-badge.is-dark .cta-badge__core { background: #0F1014; color: #C8F031; }
+@media (prefers-reduced-motion: reduce) {
+  .cta-badge__ring { animation: none; }
+  .cta-badge:hover { transform: none; }
+}
+
+/* ── Cards (white card + dark featured-card variants) ──────────── */
+.lime-card {
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 18px;
+  padding: clamp(20px, 2.2vw, 28px);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+  transition: transform 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
+}
+.lime-card:hover {
+  border-color: #0F1014;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px -16px rgba(15, 16, 20, 0.2);
+}
+.lime-card h3 {
+  font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+  font-weight: 700;
+  color: #0F1014;
+  letter-spacing: -0.01em;
+}
+.lime-card p { color: #2D2F36; line-height: 1.55; font-size: 0.95rem; }
+.lime-card.is-featured {
+  background: #0F1014;
+  color: #FFFFFF;
+  border-color: #0F1014;
+}
+.lime-card.is-featured h3 { color: #FFFFFF; }
+.lime-card.is-featured p { color: rgba(255, 255, 255, 0.78); }
+
+/* Always-dark card (e.g. services on a lime background, Nisoz pattern).
+   Uses high specificity (.slide .dark-card …) so variant rules like
+   .slide.slide-tint h3 { color: dark } don't make the headings invisible. */
+.dark-card {
+  background: #0F1014;
+  color: #FFFFFF;
+  border: 0;
+  border-radius: 18px;
+  padding: clamp(24px, 2.6vw, 36px);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
+  transition: transform 200ms ease, background 200ms ease;
+}
+.dark-card:hover { transform: translateY(-3px); background: #1F2026; }
+.slide .dark-card h3,
+.slide .dark-card h2 {
+  font-size: clamp(1rem, 1.4vw, 1.15rem);
+  font-weight: 700;
+  color: #FFFFFF;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+.slide .dark-card p { color: rgba(255, 255, 255, 0.7); font-size: 0.9rem; line-height: 1.5; }
+.dark-card__icon {
+  width: 40px; height: 40px;
+  display: grid;
+  place-items: center;
+  color: #C8F031;
+  margin-bottom: 4px;
+}
+.dark-card__divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 4px 0;
+}
+/* Card corner squares removed at user request. The .has-corner class is
+   kept harmless so existing markup doesn't need editing. */
+
+.lime-card__icon {
+  width: 44px; height: 44px;
+  border-radius: 10px;
+  background: #F2F8E0;
+  display: grid;
+  place-items: center;
+  margin-bottom: 8px;
+  color: #0F1014;
+}
+.lime-card.is-featured .lime-card__icon { background: #C8F031; }
+.lime-card__check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #2D2F36;
+}
+.lime-card__check::before { flex-shrink: 0; }
+.lime-card.is-featured .lime-card__check { color: rgba(255, 255, 255, 0.8); }
+.lime-card__check::before {
+  content: '';
+  width: 16px; height: 16px;
+  background: #C8F031;
+  border-radius: 4px;
+  display: inline-block;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'><path d='M3 8 L7 12 L13 5' stroke='%230F1014' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-size: contain;
+}
+
+/* ── Buttons ──────────────────────────────────────────────────── */
+.btn-pill-dark {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: #0F1014;
+  color: #FFFFFF;
+  padding: 14px 24px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 15px;
+  text-decoration: none;
+  transition: background 150ms ease, transform 150ms ease;
+}
+.btn-pill-dark:hover { background: #2D2F36; transform: translateY(-1px); }
+.btn-pill-lime {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: #C8F031;
+  color: #0F1014;
+  padding: 14px 24px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 15px;
+  text-decoration: none;
+  transition: background 150ms ease, transform 150ms ease;
+}
+.btn-pill-lime:hover { background: #B6DD22; transform: translateY(-1px); }
+.btn-pill-ghost {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: transparent;
+  color: inherit;
+  padding: 14px 24px;
+  border-radius: 999px;
+  border: 1.5px solid currentColor;
+  font-weight: 700;
+  font-size: 15px;
+  text-decoration: none;
+  transition: background 150ms ease, color 150ms ease;
+}
+.btn-pill-ghost:hover { background: currentColor; }
+.btn-pill-ghost:hover { color: #FFFFFF; }
+.slide-dark .btn-pill-ghost:hover { color: #0F1014; }
+
+/* Round arrow-CTA button (like the small lime circle in the Axios pin) */
+.btn-arrow {
+  width: 56px; height: 56px;
+  border-radius: 999px;
+  display: inline-grid;
+  place-items: center;
+  background: #C8F031;
+  color: #0F1014;
+  transition: background 150ms ease, transform 150ms ease;
+}
+.btn-arrow:hover { background: #B6DD22; transform: rotate(-5deg) scale(1.05); }
+
+/* Legacy aliases so any leftover .mute-btn-* / .mute-card resolves */
+.mute-btn-primary { display: inline-flex; align-items: center; gap: 10px;
+  background: #0F1014; color: #FFFFFF; padding: 14px 24px; border-radius: 999px;
+  font-weight: 700; font-size: 15px; text-decoration: none; transition: background 150ms ease; }
+.mute-btn-primary:hover { background: #2D2F36; }
+.mute-btn-secondary { display: inline-flex; align-items: center; gap: 10px;
+  background: transparent; color: #0F1014; padding: 14px 24px; border-radius: 999px;
+  border: 1.5px solid #0F1014; font-weight: 700; font-size: 15px; text-decoration: none;
+  transition: background 150ms ease, color 150ms ease; }
+.mute-btn-secondary:hover { background: #0F1014; color: #FFFFFF; }
+.mute-card {
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 18px;
+  padding: clamp(20px, 2.2vw, 28px);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: transform 200ms ease, border-color 200ms ease;
+}
+.mute-card:hover { border-color: #0F1014; transform: translateY(-2px); }
+.mute-card h3 {
+  font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+  font-weight: 700;
+  color: #0F1014;
+}
+.mute-card p { color: #2D2F36; font-size: 0.95rem; line-height: 1.55; }
+.mute-card .card-arrow {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #0F1014;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 14px;
+}
+.mute-card .card-arrow::after { content: '→'; transition: transform 200ms ease; }
+.mute-card:hover .card-arrow::after { transform: translateX(4px); }
+
+/* Bottom slide nav bar */
+.slides-footer {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 clamp(16px, 4vw, 40px);
+  z-index: 20;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-top: 1px solid #E5E7EB;
+}
+.slides-body.slide-dark-active .slides-footer {
+  background: rgba(15, 16, 20, 0.85);
+  border-top-color: rgba(255, 255, 255, 0.1);
+  color: #FFFFFF;
+}
+.slides-counter {
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #6B6E73;
+}
+.slides-body.slide-dark-active .slides-counter { color: rgba(255, 255, 255, 0.65); }
+.slides-dots {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  list-style: none;
+  margin: 0; padding: 0;
+}
+.slides-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  /* Outline style — inactive dots are visible on any background via their
+     1.5 px border. Active dot fills solid. */
+  background: transparent;
+  border: 1.5px solid #6B6E73;
+  padding: 0;
+  cursor: pointer;
+  transition: background 200ms ease, border-color 200ms ease, transform 200ms ease;
+}
+.slides-dot:hover { background: #6B6E73; }
+.slides-dot[aria-current="true"] {
+  background: #0F1014;
+  border-color: #0F1014;
+  transform: scale(1.2);
+}
+/* On dark slides — outline white-ish, active goes to lime. */
+.slides-body.slide-dark-active .slides-dot { border-color: rgba(255, 255, 255, 0.6); }
+.slides-body.slide-dark-active .slides-dot:hover { background: rgba(255, 255, 255, 0.6); }
+.slides-body.slide-dark-active .slides-dot[aria-current="true"] {
+  background: #C8F031;
+  border-color: #C8F031;
+}
+.slides-arrows {
+  display: flex;
+  gap: 8px;
+}
+.slides-arrow {
+  width: 40px; height: 40px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 999px;
+  border: 0;
+  background: #F3F4F2;
+  color: #0F1014;
+  cursor: pointer;
+  transition: background 150ms ease, transform 150ms ease;
+}
+.slides-arrow:hover:not([disabled]) { background: #C8F031; transform: scale(1.05); }
+.slides-arrow[disabled] { opacity: 0.35; cursor: not-allowed; }
+.slides-body.slide-dark-active .slides-arrow { background: rgba(255, 255, 255, 0.1); color: #FFFFFF; }
+.slides-body.slide-dark-active .slides-arrow:hover:not([disabled]) { background: #C8F031; color: #0F1014; }
+
+/* Minimalist card variant used inside slides */
+.mute-card {
+  background: #FFFFFF;
+  border: 1px solid #E8E9EB;
+  border-radius: 24px;
+  padding: clamp(20px, 2.4vw, 32px);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: transform 200ms ease, border-color 200ms ease;
+}
+.mute-card:hover { border-color: #A3A6AB; transform: translateY(-2px); }
+.mute-card h3 {
+  font-size: clamp(1.1rem, 1.6vw, 1.4rem);
+  font-weight: 700;
+  color: #13141A;
+  letter-spacing: -0.01em;
+}
+.mute-card p { color: #3A3C42; line-height: 1.55; font-size: 0.95rem; }
+.mute-card .card-arrow {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #13141A;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+}
+.mute-card .card-arrow::after { content: '→'; transition: transform 200ms ease; }
+.mute-card:hover .card-arrow::after { transform: translateX(4px); }
+
+.mute-btn-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: #13141A;
+  color: #FFFFFF;
+  padding: 14px 24px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 15px;
+  text-decoration: none;
+  transition: background 150ms ease;
+}
+.mute-btn-primary:hover { background: #3A3C42; }
+.mute-btn-secondary {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: transparent;
+  color: #13141A;
+  padding: 14px 24px;
+  border-radius: 999px;
+  border: 1px solid #13141A;
+  font-weight: 600;
+  font-size: 15px;
+  text-decoration: none;
+  transition: background 150ms ease, color 150ms ease;
+}
+.mute-btn-secondary:hover { background: #13141A; color: #FFFFFF; }
+
+/* Reduced motion: snap instead of slide */
+@media (prefers-reduced-motion: reduce) {
+  .slides-track { transition: none !important; }
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   Hamburger menu — checkbox-toggle pattern.
+   The checkbox lives at body level so the panel (also body level) can
+   escape any ancestor that creates a containing block via backdrop-filter
+   or transform. Pure CSS, no JS.
+   ────────────────────────────────────────────────────────────────── */
+.mobile-menu-toggle {
+  /* Visually hidden but functional — clicked via <label>. */
+  position: absolute;
+  top: 0; left: 0;
+  width: 1px; height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.mobile-menu-btn {
+  cursor: pointer;
+  display: inline-grid;
+  place-items: center;
+  width: 40px; height: 40px;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+.mobile-menu-icon-close { display: none; }
+#mobile-menu-toggle:checked ~ .slides-header .mobile-menu-icon-bars { display: none; }
+#mobile-menu-toggle:checked ~ .slides-header .mobile-menu-icon-close { display: block; color: #C8F031; }
+
+.mobile-menu-panel {
+  display: none;
+  position: fixed;
+  top: 56px;
+  left: 0; right: 0; bottom: 0;
+  background: #0F1014;
+  color: #FFFFFF;
+  padding: 28px 24px 40px;
+  z-index: 100;
+  overflow-y: auto;
+}
+#mobile-menu-toggle:checked ~ .mobile-menu-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  animation: mm-slide-in 200ms ease-out;
+}
+@keyframes mm-slide-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.mobile-menu-list {
+  list-style: none;
+  margin: 0; padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+.mobile-menu-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 4px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #FFFFFF !important;
+  text-decoration: none !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.mobile-menu-link:hover { color: #C8F031 !important; }
+.mobile-menu-cta { align-self: flex-start; margin-top: 20px; }
+
+/* Lock slide-body scroll while menu is open (defensive — body is already
+   overflow:hidden, but this also prevents any nested overflow scroll). */
+body:has(#mobile-menu-toggle:checked) { overflow: hidden; }
+
+/* ──────────────────────────────────────────────────────────────────
+   Mobile (≤ 768 px). Aggressively shrink everything; allow internal
+   vertical scroll so content that overflows is reachable. The slide
+   engine ignores vertical touch swipes on mobile (see slide-engine.ts),
+   so vertical = native scroll, horizontal = slide navigation.
+   ────────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .slides-header { height: 56px; padding: 0 16px; }
+  .slides-footer { height: 56px; padding: 0 12px; }
+
+  .slide {
+    /* On mobile the slide content is a tight, vertically-centered cluster
+       — like a classic landing-page hero. align-content: safe center keeps
+       the cluster mid-screen; if it ever overflows, it falls back to top. */
+    padding: 88px 20px 88px;
+    align-content: safe center;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+  }
+  /* Hero on mobile reserves room for the marquee + a bit more breathing
+     room at the top so the cluster sits visually centered above it. */
+  .slide.hero-slide { padding-bottom: 130px; padding-top: 96px; }
+
+  /* Content cluster: one centered column with consistent rhythm. No
+     `min-height: 100%` — let the content's natural height define the
+     cluster; the parent's `safe center` does the centring. */
+  .slide .slide-inner {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    text-align: center;
+    gap: 28px;
+  }
+
+  /* Layout grids (div.grid wrappers used to split content into columns
+     on desktop) collapse to single column on mobile. align-items: stretch
+     so cards / col-span wrappers take full width and their internal
+     `text-align: left` reads as proper left-alignment. */
+  .slide .slide-inner div.grid {
+    display: flex !important;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 24px !important;
+    width: 100%;
+  }
+  /* Inner col-span wrappers fill full width; their children centre. */
+  .slide .slide-inner [class*="lg:col-span-"] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+  }
+  /* But: col-span wrappers that CONTAIN cards (dark-card / lime-card) keep
+     their content left-aligned via stretch so the cards span full width. */
+  .slide .slide-inner [class*="lg:col-span-"]:has(> .dark-card),
+  .slide .slide-inner [class*="lg:col-span-"]:has(> .lime-card) {
+    align-items: stretch;
+  }
+
+  /* Card grids (ul.grid) collapse to one tight column. */
+  .slide .slide-inner ul[class*="grid"] {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+    width: 100%;
+  }
+
+  /* Centre flex button rows. */
+  .slide .slide-inner .flex { justify-content: center; }
+
+  /* Buttons that were `self-start` (left-aligned inside flex columns on
+     desktop) now centre on mobile. Same for any individual button. */
+  .slide .slide-inner .self-start,
+  .slide .slide-inner > a.btn-pill-lime,
+  .slide .slide-inner > a.btn-pill-dark,
+  .slide .slide-inner > a.btn-pill-ghost,
+  .slide .slide-inner [class*="lg:col-span-"] > a.btn-pill-lime,
+  .slide .slide-inner [class*="lg:col-span-"] > a.btn-pill-dark,
+  .slide .slide-inner [class*="lg:col-span-"] > a.btn-pill-ghost {
+    align-self: center !important;
+  }
+
+  /* Eyebrow: smaller, lighter — lets the H1 carry the focus instead of
+     competing with a giant marquee-like label. */
+  .slide-eyebrow {
+    display: inline-flex;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    opacity: 0.7;
+    margin-bottom: 0;
+  }
+
+  /* Headlines on mobile: slightly bigger for visual impact. */
+  .slide h1.h-display { font-size: clamp(2rem, 8vw, 3.5rem); line-height: 1.04; }
+  .slide h2.h-display { font-size: clamp(1.625rem, 6.5vw, 2.75rem); line-height: 1.06; }
+
+  /* Lead text constrained for comfortable reading. */
+  .slide p.lead {
+    max-width: 36ch;
+    margin-inline: auto;
+  }
+
+  /* Cards, forms, dl blocks keep their natural left-alignment so
+     internal hierarchy (label / value / list) reads correctly. */
+  .slide .dark-card,
+  .slide .lime-card,
+  .slide form,
+  .slide form *,
+  .slide dl,
+  .slide address {
+    text-align: left;
+  }
+  .slide .lime-card__check { justify-content: flex-start; }
+
+  /* Bottom slide-nav on mobile: only dots. Counter + arrows removed. */
+  .slides-counter,
+  .slides-arrows { display: none !important; }
+  .slides-footer { justify-content: center; }
+
+  /* Bottom slide-nav on mobile: only dots. Counter + arrows removed. */
+  .slides-counter,
+  .slides-arrows { display: none !important; }
+  .slides-footer { justify-content: center; }
+
+  /* Display headings — much smaller min so long copy doesn't overflow.
+     6.5vw on a 360-px-wide viewport ≈ 23 px which is fine. */
+  .slide h1.h-display { font-size: clamp(1.625rem, 6.5vw, 2.75rem); line-height: 1.06; }
+  .slide h2.h-display { font-size: clamp(1.5rem,   6vw,   2.5rem);  line-height: 1.08; }
+  .slide h1            { font-size: clamp(1.625rem, 6vw, 2.5rem); }
+  .slide h2            { font-size: clamp(1.375rem, 5.5vw, 2.25rem); }
+  .slide p.lead        { font-size: 0.875rem; line-height: 1.5; max-width: 100%; }
+  .slide-eyebrow       { font-size: 11px; margin-bottom: 12px; }
+
+  /* Cards: compact padding + smaller copy. */
+  .dark-card, .lime-card {
+    padding: 16px;
+    gap: 8px;
+    min-height: auto !important;
+    border-radius: 12px !important;
+  }
+  .slide .dark-card h3 { font-size: 0.95rem; }
+  .slide .dark-card p, .slide .lime-card p { font-size: 0.85rem; line-height: 1.45; }
+  .lime-card__check { font-size: 12px; gap: 6px; }
+  .lime-card__check::before { width: 14px; height: 14px; }
+
+  /* Buttons — slightly smaller pills. */
+  .btn-pill-lime, .btn-pill-dark, .btn-pill-ghost,
+  .mute-btn-primary, .mute-btn-secondary {
+    padding: 12px 18px;
+    font-size: 14px;
+  }
+
+  /* Marquee: minimal, doesn't eat content area. */
+  .marquee__track {
+    padding: 8px 14px;
+    font-size: 12px;
+    gap: 28px;
+  }
+  .marquee__item { gap: 28px; }
+  .marquee__star { width: 12px; height: 12px; }
+
+  /* Bottom slide-nav: smaller dots + smaller arrows. */
+  .slides-dot { width: 8px; height: 8px; }
+  .slides-dot[aria-current="true"] { transform: scale(1.4); }
+  .slides-counter { font-size: 11px; }
+  .slides-arrow { width: 32px; height: 32px; }
+  .slides-arrow svg { width: 14px; height: 14px; }
+
+  /* The since/cta circular badges are decorative — hide on mobile. */
+  .since-badge, .cta-badge { display: none !important; }
+
+  /* Multi-column grids: gap shrinks. */
+  .slide .grid { gap: 16px !important; }
+}
+
+/* Very short viewports (landscape phones, tiny laptops). Hide non-essential
+   decorative bits so the focal content fits. */
+@media (max-height: 640px) {
+  .slides-header { height: 52px; }
+  .slides-footer { height: 52px; }
+  .slide { padding-top: 60px; padding-bottom: 60px; }
+  /* Hide the hero marquee on very short screens. */
+  .slide .marquee { display: none; }
+  .slide h1.h-display { font-size: clamp(1.5rem, 5vw, 2.25rem); }
+  .slide h2.h-display { font-size: clamp(1.375rem, 4.5vw, 2rem); }
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   .hexform — purpose-built contact form. Consistent label position,
+   fixed 48 px input height, flat field hierarchy (no nested grids
+   that would clash with the mobile slide-inner overrides), full-width
+   submit button.
+   ────────────────────────────────────────────────────────────────── */
+.hexform {
+  display: flex !important;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  padding: clamp(20px, 4vw, 32px) !important;
+  text-align: left;
+}
+.hexform__hp {
+  position: absolute !important;
+  left: -9999px !important;
+  width: 1px; height: 1px;
+}
+.hexform__field {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 6px;
+  width: 100%;
+  text-align: left;
+}
+.hexform__field > label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #2D2F36;
+  letter-spacing: 0.01em;
+  display: block;
+}
+.hexform__req { color: #B6DD22; font-weight: 800; margin-left: 2px; }
+.hexform__opt { color: #6B6E73; font-weight: 400; margin-left: 4px; }
+.hexform .input {
+  width: 100% !important;
+  height: 48px !important;
+  padding: 0 16px !important;
+  border-radius: 10px !important;
+  background: #FFFFFF !important;
+  border: 1.5px solid #E5E7EB !important;
+  color: #0F1014 !important;
+  font-size: 15px !important;
+  font-family: inherit !important;
+  box-shadow: none !important;
+}
+.hexform textarea.input {
+  min-height: 120px !important;
+  height: auto !important;
+  padding: 12px 16px !important;
+  resize: vertical !important;
+  line-height: 1.5 !important;
+}
+.hexform input[type="file"].input {
+  height: auto !important;
+  padding: 10px 12px !important;
+  font-size: 13px !important;
+}
+.hexform select.input {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'><path d='M5 8 L10 13 L15 8' stroke='%230F1014' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 14px center !important;
+  background-size: 18px 18px !important;
+  padding-right: 42px !important;
+  cursor: pointer;
+}
+.hexform .input:focus {
+  outline: none !important;
+  border-color: #0F1014 !important;
+  box-shadow: 0 0 0 3px rgba(15, 16, 20, 0.08) !important;
+}
+.hexform__consent {
+  display: flex !important;
+  align-items: flex-start;
+  gap: 12px;
+  text-align: left;
+  margin-top: 4px;
+  padding: 4px 0;
+}
+.hexform__consent input[type="checkbox"] {
+  flex-shrink: 0;
+  margin-top: 3px;
+  width: 18px;
+  height: 18px;
+  accent-color: #0F1014;
+  cursor: pointer;
+}
+.hexform__consent > label {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #2D2F36;
+  cursor: pointer;
+}
+.hexform__consent a { color: #0F1014; text-decoration: underline; text-underline-offset: 2px; }
+.hexform__submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: #0F1014;
+  color: #FFFFFF;
+  padding: 14px 24px;
+  border: 0;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 15px;
+  text-decoration: none;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 8px;
+  transition: background 150ms ease;
+}
+.hexform__submit:hover { background: #2D2F36; }
+
+/* Slide layout has no dark-mode counterpart — force form inputs to stay
+   light even when the OS reports prefers-color-scheme: dark. */
+.slides-body .input {
+  background: #FFFFFF;
+  border-color: #E8E9EB;
+  color: #13141A;
+  border-radius: 12px;
+}
+.slides-body .input:focus {
+  outline: none;
+  border-color: #13141A;
+  box-shadow: 0 0 0 3px rgba(19, 20, 26, 0.1);
+}
+@media (prefers-color-scheme: dark) {
+  .slides-body .input {
+    background: #FFFFFF;
+    border-color: #E8E9EB;
+    color: #13141A;
+  }
+}
+
+/* Native <select> with .input gets the same chrome as text inputs:
+   strip the OS arrow, paint our own dark chevron via inline SVG, match
+   padding / border-radius / focus-ring. */
+.slides-body select.input {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'><path d='M5 8 L10 13 L15 8' stroke='%230F1014' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 18px 18px;
+  padding-right: 42px;
+  cursor: pointer;
+  line-height: 1.4;
+  font: inherit;
+  font-size: 1rem;
+}
+.slides-body select.input:focus {
+  border-color: #13141A;
+  box-shadow: 0 0 0 3px rgba(19, 20, 26, 0.1);
+}
+.slides-body select.input::-ms-expand { display: none; }
+.slides-body input[type="file"].input {
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.9rem;
+}
+.slides-body input[type="file"].input::file-selector-button,
+.slides-body input[type="file"].input::-webkit-file-upload-button {
+  background: #0F1014;
+  color: #FFFFFF;
+  border: 0;
+  border-radius: 999px;
+  padding: 6px 14px;
+  margin-right: 12px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 150ms ease;
+}
+.slides-body input[type="file"].input::file-selector-button:hover {
+  background: #2D2F36;
+}

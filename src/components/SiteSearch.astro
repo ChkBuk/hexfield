@@ -1,0 +1,105 @@
+---
+// Pagefind-backed site search. Loads /pagefind/pagefind.js lazily on first focus,
+// so it has zero impact on initial Lighthouse Perf for pages where the user
+// never opens search.
+export interface Props {
+  label?: string;
+  placeholder?: string;
+}
+const { label = 'Search the site', placeholder = 'Search articles…' } = Astro.props;
+---
+<div class="site-search" data-site-search>
+  <label class="block">
+    <span class="sr-only">{label}</span>
+    <input
+      type="search"
+      role="searchbox"
+      aria-label={label}
+      autocomplete="off"
+      placeholder={placeholder}
+      class="input"
+      data-site-search-input
+    />
+  </label>
+  <div
+    role="status"
+    aria-live="polite"
+    class="hidden mt-3 text-sm text-ink-500"
+    data-site-search-status
+  ></div>
+  <ul class="mt-4 space-y-3 hidden" data-site-search-results></ul>
+</div>
+
+<script>
+  // Lazy-load Pagefind only when the search input is focused.
+  // This keeps the 50-ish KB of search runtime off the initial page load.
+  const container = document.querySelector<HTMLElement>('[data-site-search]');
+  if (container) {
+    const input = container.querySelector<HTMLInputElement>('[data-site-search-input]')!;
+    const status = container.querySelector<HTMLElement>('[data-site-search-status]')!;
+    const results = container.querySelector<HTMLUListElement>('[data-site-search-results]')!;
+
+    let pagefindPromise: Promise<any> | null = null;
+    const loadPagefind = () => {
+      if (!pagefindPromise) {
+        // Pagefind is emitted to /pagefind/ by the `postbuild` step, after Vite has
+        // finished bundling. Tell Vite/Rollup to leave this import alone.
+        // @ts-expect-error — runtime asset, no static module to resolve.
+        pagefindPromise = import(/* @vite-ignore */ '/pagefind/pagefind.js').then(async (m) => {
+          await m.options({ excerptLength: 24 });
+          return m;
+        }).catch((err) => {
+          console.warn('[site-search] failed to load Pagefind:', err);
+          pagefindPromise = null;
+          throw err;
+        });
+      }
+      return pagefindPromise;
+    };
+
+    let lastQuery = '';
+    let debounce: number | undefined;
+    const run = async () => {
+      const q = input.value.trim();
+      if (q === lastQuery) return;
+      lastQuery = q;
+      if (q.length < 2) {
+        status.classList.add('hidden');
+        results.classList.add('hidden');
+        results.innerHTML = '';
+        return;
+      }
+      status.classList.remove('hidden');
+      status.textContent = 'Searching…';
+      try {
+        const pagefind = await loadPagefind();
+        const search = await pagefind.search(q);
+        const hits = await Promise.all(search.results.slice(0, 8).map((r: any) => r.data()));
+        if (hits.length === 0) {
+          status.textContent = `No results for "${q}".`;
+          results.classList.add('hidden');
+          results.innerHTML = '';
+          return;
+        }
+        status.textContent = `${hits.length} result${hits.length === 1 ? '' : 's'} for "${q}"`;
+        results.classList.remove('hidden');
+        results.innerHTML = hits.map((h: any) => `
+          <li class="card">
+            <a href="${h.url}" class="no-underline">
+              <p class="font-semibold text-ink-900 dark:text-ink-50">${h.meta?.title ?? h.url}</p>
+              <p class="prose-body text-sm mt-1">${h.excerpt}</p>
+            </a>
+          </li>`).join('');
+      } catch (err) {
+        status.textContent = 'Search is unavailable right now.';
+        results.classList.add('hidden');
+      }
+    };
+
+    input.addEventListener('focus', loadPagefind, { once: true });
+    input.addEventListener('input', () => {
+      window.clearTimeout(debounce);
+      debounce = window.setTimeout(run, 150);
+    });
+  }
+</script>

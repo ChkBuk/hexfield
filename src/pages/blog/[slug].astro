@@ -1,0 +1,62 @@
+---
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import CtaBand from '~/components/CtaBand.astro';
+import { getCollection } from 'astro:content';
+import { SITE } from '~/config/site';
+import { breadcrumbSchema, blogPostingSchema } from '~/lib/schema';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  return posts.map((post) => ({ params: { slug: post.slug }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+const path = `/blog/${post.slug}/`;
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Insights', path: '/blog/' },
+  { name: post.data.title, path },
+];
+
+const schemas = [
+  breadcrumbSchema(crumbs),
+  blogPostingSchema({
+    title: post.data.title,
+    description: post.data.description,
+    path,
+    publishedTime: post.data.publishedDate.toISOString(),
+    modifiedTime: post.data.updatedDate?.toISOString(),
+    author: post.data.author,
+  }),
+];
+
+const fmt = new Intl.DateTimeFormat('en-AU', { day: 'numeric', month: 'long', year: 'numeric' });
+---
+<BaseLayout
+  title={`${post.data.title} | ${SITE.name} Insights`}
+  description={post.data.description}
+  {path}
+  type="article"
+  publishedTime={post.data.publishedDate.toISOString()}
+  modifiedTime={post.data.updatedDate?.toISOString()}
+  {schemas}
+>
+  <Breadcrumbs items={crumbs} />
+  <article class="container-narrow section max-w-3xl">
+    <header class="mb-8">
+      <p class="text-sm text-ink-500 mb-3">
+        <time datetime={post.data.publishedDate.toISOString()}>{fmt.format(post.data.publishedDate)}</time>
+        &middot; By {post.data.author}
+      </p>
+      <h1 class="h1 mb-4 text-ink-900 dark:text-ink-50">{post.data.title}</h1>
+      <p class="prose-body text-lg">{post.data.description}</p>
+    </header>
+    <div class="prose-body space-y-4 [&_h2]:h2 [&_h2]:mt-12 [&_h2]:mb-3 [&_h2]:text-ink-900 [&_h2]:dark:text-ink-50 [&_h3]:h3 [&_h3]:mt-8 [&_h3]:mb-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:space-y-1 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:space-y-1">
+      <Content />
+    </div>
+  </article>
+  <CtaBand />
+</BaseLayout>

@@ -1,0 +1,106 @@
+---
+import SlidesLayout from '~/layouts/SlidesLayout.astro';
+import { SITE } from '~/config/site';
+import { breadcrumbSchema } from '~/lib/schema';
+
+const title = `About | ${SITE.name}`;
+const description = `Meet the developer behind ${SITE.legalName} — a solo full-stack engineer based in Adelaide, South Australia, building forms, websites and systems for clients worldwide.`;
+
+const reasons = [
+  { h: 'Direct communication', d: 'No project managers, no account handlers, no layers. You speak directly with the person writing the code.' },
+  { h: 'Faster turnaround',     d: 'Decisions are made in the same conversation they\'re raised. No internal handoffs, no waiting for sign-off chains.' },
+  { h: 'Fair pricing',          d: 'Lower overhead means a lower bill for the same outcome. Fixed-fee proposals, no surprise add-ons.' },
+  { h: 'Full accountability',   d: 'I build it, I support it. There is no "maintenance team" to hand you off to when something breaks.' },
+];
+
+const stack = ['MERN', 'Java + Spring Boot', 'Oracle', 'PostgreSQL', 'SEO tools', 'CI/CD'];
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'About', path: '/about/' },
+];
+
+const slideCount = 4;
+---
+<SlidesLayout {title} {description} path="/about/" schemas={[breadcrumbSchema(crumbs)]} {slideCount}>
+
+  <!-- ─── Slide 1: Hero (DARK) ─────────────────────────────────────── -->
+  <section class="slide slide-dark" data-variant="dark">
+    <div class="slide-inner">
+      <div class="grid lg:grid-cols-12 gap-10 items-end">
+        <div class="lg:col-span-9">
+          <p class="slide-eyebrow">About</p>
+          <h1 class="h-display">Hi, I'm<br/><span class="hl-pill">Charith</span></h1>
+        </div>
+        <div class="lg:col-span-3">
+          <p class="lead mb-6" style="font-size: 1rem;">A solo full-stack developer based in Adelaide, South Australia, working with clients across the globe — from local startups to international businesses.</p>
+          <a href="/contact/" class="btn-pill-lime">Work with me</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Slide 2: Why solo (LIME) ─────────────────────────────────── -->
+  <section class="slide slide-tint" data-variant="tint">
+    <div class="slide-inner">
+      <div class="grid lg:grid-cols-12 gap-8 items-end mb-12">
+        <div class="lg:col-span-7">
+          <p class="slide-eyebrow">Why a solo developer?</p>
+          <h2 class="h-display">Four reasons<br/>clients keep<br/>coming back</h2>
+        </div>
+        <div class="lg:col-span-5">
+          <p class="lead">Bigger isn't always better. For most projects under enterprise scale, working directly with one accountable developer beats coordinating an agency.</p>
+        </div>
+      </div>
+      <ul class="grid gap-px md:grid-cols-2 list-none p-0 bg-graphite-900" style="border-radius: 18px; overflow: hidden;">
+        {reasons.map((r, i) => (
+          <li class="dark-card" style="border-radius: 0; min-height: 180px;">
+            <p style="color: rgba(255,255,255,0.4); font-size: 12px; font-weight: 700; letter-spacing: 0.1em;">{String(i + 1).padStart(2, '0')}</p>
+            <h3>{r.h}</h3>
+            <div class="dark-card__divider"></div>
+            <p>{r.d}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- ─── Slide 3: Tech stack (LIGHT) ──────────────────────────────── -->
+  <section class="slide slide-light" data-variant="light">
+    <div class="slide-inner">
+      <div class="grid lg:grid-cols-12 gap-8 items-end mb-12">
+        <div class="lg:col-span-7">
+          <p class="slide-eyebrow">Tech stack</p>
+          <h2 class="h-display">I don't just<br/>write code<br/>I solve <span class="hl-pill">business problems</span></h2>
+        </div>
+        <div class="lg:col-span-5">
+          <p class="lead">The stack below is the toolbox. The job is matching the right tool to the right problem, then shipping a clean, maintainable system around it.</p>
+        </div>
+      </div>
+      <ul class="flex flex-wrap gap-3 list-none p-0">
+        {stack.map((s) => (
+          <li>
+            <span class="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-graphite-900 text-white font-bold text-sm tracking-tight">
+              <span style="display:inline-block; width:8px; height:8px; border-radius:999px; background:#C8F031;"></span>
+              {s}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- ─── Slide 4: CTA (DARK) ──────────────────────────────────────── -->
+  <section class="slide slide-dark" data-variant="dark">
+    <div class="slide-inner text-center" style="display: grid; place-items: center;">
+      <p class="slide-eyebrow" style="justify-self: center;">Let's talk</p>
+      <h2 class="h-display mb-6">Want to <span class="hl-pill">build</span><br/>something smart?</h2>
+      <p class="lead mb-10" style="margin-inline: auto;">Free 30-minute scoping call — fixed-fee proposal within one business day. No commitment.</p>
+      <div class="flex flex-wrap gap-3 justify-center">
+        <a href="/contact/" class="btn-pill-lime">Get a free quote</a>
+        <a href="/portfolio/" class="btn-pill-ghost">See recent work</a>
+      </div>
+    </div>
+  </section>
+
+</SlidesLayout>

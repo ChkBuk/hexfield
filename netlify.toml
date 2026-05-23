@@ -1,0 +1,160 @@
+# Netlify build + headers + redirects configuration.
+# Hosting: static site built by Astro → output in `dist/`.
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Netlify Forms: surface the static form to Netlify's form scanner.
+# Astro-rendered forms with `data-netlify="true"` are detected during deploy.
+[[plugins]]
+  package = "@netlify/plugin-lighthouse"
+  [plugins.inputs]
+    output_path = "reports/lighthouse.html"
+  [plugins.inputs.thresholds]
+    performance = 0.9
+    accessibility = 0.9
+    "best-practices" = 0.9
+    seo = 0.95
+
+# --- Security headers (also help SEO trust signals) -------------------------
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=(), interest-cohort=()"
+    Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
+    Content-Security-Policy = "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'wasm-unsafe-eval'; font-src 'self' data:; form-action 'self'; base-uri 'self'; frame-ancestors 'none'"
+
+# Long cache for hashed Astro assets
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Pagefind ships hashed wasm + json fragments under /pagefind/ — safe to cache
+# long-term because the entry script imports the hashed files by name.
+[[headers]]
+  for = "/pagefind/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# --- Redirects --------------------------------------------------------------
+
+# --- Redirects --------------------------------------------------------------
+
+# Force canonical host (no www).
+[[redirects]]
+  from = "https://www.hexfield.com.au/*"
+  to = "https://hexfield.com.au/:splat"
+  status = 301
+  force = true
+
+# Old URLs from previous site iterations → new structure.
+[[redirects]]
+  from = "/case-studies/*"
+  to = "/portfolio/"
+  status = 301
+[[redirects]]
+  from = "/locations/*"
+  to = "/contact/"
+  status = 301
+[[redirects]]
+  from = "/industries/*"
+  to = "/services/"
+  status = 301
+[[redirects]]
+  from = "/team/*"
+  to = "/about/"
+  status = 301
+[[redirects]]
+  from = "/pricing/*"
+  to = "/services/"
+  status = 301
+[[redirects]]
+  from = "/security/*"
+  to = "/privacy/"
+  status = 301
+
+# Service-name synonyms → service-page anchors.
+[[redirects]]
+  from = "/services/managed-it/*"
+  to = "/services/"
+  status = 301
+[[redirects]]
+  from = "/services/cloud/*"
+  to = "/services/"
+  status = 301
+[[redirects]]
+  from = "/services/cybersecurity/*"
+  to = "/services/"
+  status = 301
+[[redirects]]
+  from = "/forms/*"
+  to = "/services/#forms"
+  status = 301
+[[redirects]]
+  from = "/web-development/*"
+  to = "/services/#web"
+  status = 301
+[[redirects]]
+  from = "/system-design/*"
+  to = "/services/#systems"
+  status = 301
+[[redirects]]
+  from = "/seo/*"
+  to = "/services/#seo"
+  status = 301
+
+# Marketing-page synonyms.
+[[redirects]]
+  from = "/contact-us/*"
+  to = "/contact/"
+  status = 301
+[[redirects]]
+  from = "/get-in-touch/*"
+  to = "/contact/"
+  status = 301
+[[redirects]]
+  from = "/quote/*"
+  to = "/contact/"
+  status = 301
+[[redirects]]
+  from = "/about-us/*"
+  to = "/about/"
+  status = 301
+[[redirects]]
+  from = "/work/*"
+  to = "/portfolio/"
+  status = 301
+[[redirects]]
+  from = "/projects/*"
+  to = "/portfolio/"
+  status = 301
+[[redirects]]
+  from = "/insights/*"
+  to = "/blog/"
+  status = 301
+[[redirects]]
+  from = "/news/*"
+  to = "/blog/"
+  status = 301
+[[redirects]]
+  from = "/articles/*"
+  to = "/blog/"
+  status = 301
+[[redirects]]
+  from = "/privacy-policy/*"
+  to = "/privacy/"
+  status = 301

@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.astro/
+.cache/
+.env
+.env.*
+!.env.example
+.DS_Store
+.netlify/
+reports/
+*.log

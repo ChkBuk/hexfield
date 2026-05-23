@@ -1,0 +1,157 @@
+---
+import SlidesLayout from '~/layouts/SlidesLayout.astro';
+import { SITE } from '~/config/site';
+import { breadcrumbSchema } from '~/lib/schema';
+
+const title = `Contact | ${SITE.name}`;
+const description = `Get in touch with ${SITE.legalName} — solo full-stack developer in Adelaide, available worldwide. Free 30-minute scoping call, fixed-fee proposals within one business day.`;
+
+const crumbs = [
+  { name: 'Home', path: '/' },
+  { name: 'Contact', path: '/contact/' },
+];
+
+const slideCount = 3;
+---
+<SlidesLayout {title} {description} path="/contact/" schemas={[breadcrumbSchema(crumbs)]} {slideCount}>
+
+  <!-- ─── Slide 1: Hero (DARK) ─────────────────────────────────────── -->
+  <section class="slide slide-dark" data-variant="dark">
+    <div class="slide-inner">
+      <div class="grid lg:grid-cols-12 gap-10 items-end">
+        <div class="lg:col-span-9">
+          <p class="slide-eyebrow">Let's build something smart</p>
+          <h1 class="h-display">From <span class="hl-pill">Adelaide</span><br/>to wherever<br/>you are</h1>
+        </div>
+        <div class="lg:col-span-3">
+          <p class="lead mb-6" style="font-size: 1rem;">Tell me what you want to build. I reply within one business day with a scope, a fixed fee and an honest opinion on fit.</p>
+          <div class="flex flex-wrap gap-3">
+            <a href="#slide-2" data-slide-goto="1" class="btn-pill-lime">Send a message</a>
+            <a href={`mailto:${SITE.email}`} class="btn-pill-ghost">{SITE.email}</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Slide 2: Form (LIME) — flat .hexform layout ─────────────── -->
+  <section class="slide slide-tint" data-variant="tint">
+    <div class="slide-inner grid lg:grid-cols-12 gap-8 items-start">
+      <div class="lg:col-span-5">
+        <p class="slide-eyebrow">Send a message</p>
+        <h2 class="h-display mb-4">I read every<br/><span class="hl-pill" style="background: #0F1014; color: #C8F031;">enquiry</span><br/>myself</h2>
+        <p class="text-graphite-700" style="font-size: 0.95rem;">Tell me what you want to build. Fields marked <span class="hexform__req">*</span> are required.</p>
+      </div>
+
+      <form
+        name="contact"
+        method="POST"
+        action="/contact/thanks/"
+        enctype="multipart/form-data"
+        data-netlify="true"
+        netlify-honeypot="company-website"
+        class="hexform lime-card lg:col-span-7"
+      >
+        <input type="hidden" name="form-name" value="contact" />
+        <p class="hexform__hp" aria-hidden="true">
+          <label>Do not fill: <input name="company-website" tabindex="-1" autocomplete="off" /></label>
+        </p>
+
+        <div class="hexform__field">
+          <label for="name">Name <span class="hexform__req">*</span></label>
+          <input id="name" name="name" type="text" required aria-required="true" autocomplete="name" class="input" />
+        </div>
+
+        <div class="hexform__field">
+          <label for="email">Work email <span class="hexform__req">*</span></label>
+          <input id="email" name="email" type="email" required aria-required="true" autocomplete="email" class="input" />
+        </div>
+
+        <div class="hexform__field">
+          <label for="company">Company <span class="hexform__opt">(optional)</span></label>
+          <input id="company" name="company" type="text" autocomplete="organization" class="input" />
+        </div>
+
+        <div class="hexform__field">
+          <label for="service">Service interest <span class="hexform__req">*</span></label>
+          <select id="service" name="service" required aria-required="true" class="input">
+            <option value="">Select a service…</option>
+            <option value="forms">Forms Digitalization</option>
+            <option value="web-design">Web Design</option>
+            <option value="web-dev">Web Development (MERN / Java)</option>
+            <option value="system-design">System Design &amp; Development</option>
+            <option value="seo">SEO</option>
+            <option value="other">Something else</option>
+          </select>
+        </div>
+
+        <div class="hexform__field">
+          <label for="message">How can I help? <span class="hexform__req">*</span></label>
+          <textarea id="message" name="message" rows="4" required aria-required="true" class="input" placeholder="What are you building? Budget, timeline, anything relevant."></textarea>
+        </div>
+
+        <div class="hexform__field">
+          <label for="attachment">Attach a brief <span class="hexform__opt">(optional · PDF / doc / image)</span></label>
+          <input id="attachment" name="attachment" type="file" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.txt" class="input" />
+        </div>
+
+        <div class="hexform__consent">
+          <input id="consent" name="consent" type="checkbox" required aria-required="true" />
+          <label for="consent">
+            I accept the <a href="/privacy/">Privacy Policy</a> and consent to my information being handled accordingly. <span class="hexform__req">*</span>
+          </label>
+        </div>
+
+        <button type="submit" class="hexform__submit">
+          Send message
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M7 17 L17 7 M9 7 H17 V15" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <!-- ─── Slide 3: Direct details (LIGHT) ──────────────────────────── -->
+  <section class="slide slide-light" data-variant="light">
+    <div class="slide-inner">
+      <div class="grid lg:grid-cols-12 gap-8 items-end mb-12">
+        <div class="lg:col-span-7">
+          <p class="slide-eyebrow">Direct details</p>
+          <h2 class="h-display"><span class="hl-pill">Based</span> in Adelaide<br/>Available worldwide</h2>
+        </div>
+        <div class="lg:col-span-5">
+          <p class="lead">Prefer email, phone or a quick DM on LinkedIn? Pick whatever works — they all reach me directly.</p>
+        </div>
+      </div>
+      <div class="grid gap-px md:grid-cols-2 list-none p-0 bg-graphite-900" style="border-radius: 18px; overflow: hidden;">
+        <div class="dark-card" style="border-radius: 0; text-align: left;">
+          <p style="color: rgba(255,255,255,0.4); font-size: 12px; font-weight: 700; letter-spacing: 0.1em;">EMAIL</p>
+          <a href={`mailto:${SITE.email}`} style="color: #C8F031; font-size: 1.5rem; font-weight: 700; letter-spacing: -0.01em; align-self: flex-start;">{SITE.email}</a>
+          <p style="color: rgba(255,255,255,0.6); font-size: 13px;">Reply within one business day.</p>
+        </div>
+        <div class="dark-card" style="border-radius: 0; text-align: left;">
+          <p style="color: rgba(255,255,255,0.4); font-size: 12px; font-weight: 700; letter-spacing: 0.1em;">PHONE</p>
+          <a href={`tel:${SITE.phoneTel}`} style="color: #C8F031; font-size: 1.5rem; font-weight: 700; letter-spacing: -0.01em; align-self: flex-start;">{SITE.phoneDisplay}</a>
+          <p style="color: rgba(255,255,255,0.6); font-size: 13px;">{SITE.hours}</p>
+        </div>
+        <div class="dark-card" style="border-radius: 0; text-align: left;">
+          <p style="color: rgba(255,255,255,0.4); font-size: 12px; font-weight: 700; letter-spacing: 0.1em;">ADDRESS</p>
+          <address class="not-italic" style="color: #FFFFFF; font-weight: 700; font-size: 1.05rem; align-self: flex-start;">
+            {SITE.address.street}<br/>{SITE.address.locality} {SITE.address.region} {SITE.address.postalCode}
+          </address>
+          <p style="color: rgba(255,255,255,0.6); font-size: 13px;">{SITE.legalName} · ABN {SITE.abn}</p>
+        </div>
+        <div class="dark-card" style="border-radius: 0; text-align: left;">
+          <p style="color: rgba(255,255,255,0.4); font-size: 12px; font-weight: 700; letter-spacing: 0.1em;">PROFILE</p>
+          <a href={SITE.social.linkedin} rel="noopener" aria-label="LinkedIn"
+             style="display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 10px; background: #C8F031; color: #0F1014; align-self: flex-start;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.063 2.063 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+            </svg>
+          </a>
+          <p style="color: rgba(255,255,255,0.6); font-size: 13px; margin-top: 8px;">Connect on LinkedIn.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</SlidesLayout>

@@ -1,0 +1,149 @@
+---
+// Slide-deck layout — used by all primary nav pages. Subpages (blog posts,
+// privacy etc.) keep BaseLayout so SEO + scroll behaviour is unchanged.
+import '~/styles/global.css';
+import Seo from '~/components/Seo.astro';
+import JsonLd from '~/components/JsonLd.astro';
+import Logo from '~/components/Logo.astro';
+import { SITE, NAV } from '~/config/site';
+import { organizationSchema, websiteSchema } from '~/lib/schema';
+
+export interface Props {
+  title: string;
+  description: string;
+  path: string;
+  image?: string;
+  /** Page-specific JSON-LD blocks. */
+  schemas?: Array<Record<string, unknown>>;
+  /** Number of slides — used for the static initial counter render. */
+  slideCount: number;
+}
+
+const { title, description, path, image, schemas = [], slideCount } = Astro.props;
+---
+<!doctype html>
+<html lang={SITE.hreflang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content={SITE.themeColor} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="alternate" type="application/rss+xml" title={`${SITE.name} — Blog RSS`} href="/rss.xml" />
+
+    <Seo {title} {description} {path} {image} />
+
+    <JsonLd data={organizationSchema} />
+    <JsonLd data={websiteSchema} />
+    {schemas.map((s) => <JsonLd data={s} />)}
+  </head>
+  <body class="slides-body bg-canvas text-graphite-900 antialiased">
+    <a href="#main" class="sr-only focus:not-sr-only fixed top-2 left-2 z-50 bg-mute text-white rounded">
+      Skip to main content
+    </a>
+
+    <!-- Mobile menu toggle (hidden checkbox at body level so the panel can
+         escape the header's `backdrop-filter` containing block). -->
+    <input type="checkbox" id="mobile-menu-toggle" class="mobile-menu-toggle" aria-hidden="true" tabindex="-1" />
+
+    <!-- Top bar — minimal, persistent across slides -->
+    <header class="slides-header">
+      <a href="/" class="brand-link no-underline" aria-label={`${SITE.name} home`}>
+        <Logo size={38} />
+      </a>
+
+      <nav aria-label="Primary" class="hidden md:block">
+        <ul class="flex items-center gap-1">
+          {NAV.map((item) => (
+            <li>
+              <a href={item.href}
+                 class="nav-link px-3 py-2 rounded-md no-underline">
+                {item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      <!-- Hamburger label — toggles the checkbox at body level. Mobile only.
+           Sits on the right so it doesn't crowd the logo. -->
+      <label for="mobile-menu-toggle" class="mobile-menu-btn md:hidden" aria-label="Toggle menu">
+        <svg class="mobile-menu-icon-bars" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+          <path d="M3 6h18M3 12h18M3 18h18" stroke-linecap="round"/>
+        </svg>
+        <svg class="mobile-menu-icon-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+          <path d="M6 6 L18 18 M18 6 L6 18" stroke-linecap="round"/>
+        </svg>
+      </label>
+    </header>
+
+    <!-- Viewport: locks vertical, drives horizontal -->
+    <main id="main" class="slides-viewport" data-slides-viewport data-pagefind-body>
+      <div class="slides-track" data-slides-container>
+        <slot />
+      </div>
+    </main>
+
+    <!-- Bottom slide nav -->
+    <footer class="slides-footer" aria-label="Slide navigation">
+      <span class="slides-counter" data-slide-counter aria-live="polite" aria-atomic="true">
+        01 / {String(slideCount).padStart(2, '0')}
+      </span>
+
+      <ol class="slides-dots" aria-label="Jump to slide">
+        {Array.from({ length: slideCount }, (_, i) => (
+          <li>
+            <button type="button"
+                    class="slides-dot"
+                    data-slide-goto={i}
+                    aria-current={i === 0 ? 'true' : 'false'}
+                    aria-label={`Go to slide ${i + 1}`}></button>
+          </li>
+        ))}
+      </ol>
+
+      <div class="slides-arrows">
+        <button type="button" class="slides-arrow" data-slide-prev aria-label="Previous slide" disabled>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+            <path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button type="button" class="slides-arrow" data-slide-next aria-label="Next slide">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+            <path d="M9 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </footer>
+
+    <!-- Mobile menu panel — lives at body level (sibling of header) so its
+         position: fixed honours the viewport instead of being trapped inside
+         the header's backdrop-filter containing block. -->
+    <div class="mobile-menu-panel md:hidden" aria-hidden="true">
+      <nav aria-label="Primary mobile">
+        <ul class="mobile-menu-list">
+          {NAV.map((item) => (
+            <li>
+              <a href={item.href} class="mobile-menu-link">
+                {item.label}
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+                  <path d="M7 17 L17 7 M9 7 H17 V15" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+      <a href="/contact/" class="btn-pill-lime mobile-menu-cta">
+        Get a quote
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+          <path d="M7 17 L17 7 M9 7 H17 V15" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+
+    <script>
+      import '~/scripts/slide-engine.ts';
+    </script>
+  </body>
+</html>

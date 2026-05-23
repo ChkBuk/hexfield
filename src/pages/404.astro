@@ -1,0 +1,48 @@
+---
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import SiteSearch from '~/components/SiteSearch.astro';
+
+const popular = [
+  { label: 'Forms Digitalization', href: '/services/#forms' },
+  { label: 'Web Design',           href: '/services/#web-design' },
+  { label: 'Web Development',      href: '/services/#web' },
+  { label: 'System Design',        href: '/services/#systems' },
+  { label: 'SEO',                  href: '/services/#seo' },
+  { label: 'Portfolio',            href: '/portfolio/' },
+  { label: 'About',                href: '/about/' },
+  { label: 'Contact',              href: '/contact/' },
+  { label: 'Insights',             href: '/blog/' },
+  { label: 'Home',                 href: '/' },
+];
+---
+<BaseLayout
+  title="Page not found | Hexfield"
+  description="Sorry, the page you were looking for does not exist."
+  path="/404/"
+  robots="noindex,follow"
+>
+  <section class="container-narrow section max-w-2xl">
+    <div class="text-center mb-10">
+      <p class="text-brand-700 dark:text-brand-500 font-bold text-sm uppercase tracking-wider mb-2">404</p>
+      <h1 class="h1 mb-4">We couldn't find that page</h1>
+      <p class="prose-body mx-auto">The page you were looking for does not exist or has moved. Try searching, or jump to one of our most-visited pages.</p>
+    </div>
+
+    <SiteSearch label="Search Hexfield" placeholder="Search for a service, city or article…" />
+
+    <h2 class="text-sm font-bold uppercase tracking-wider text-ink-500 mt-12 mb-4">Popular pages</h2>
+    <ul class="grid sm:grid-cols-2 gap-2">
+      {popular.map((p) => (
+        <li>
+          <a href={p.href} class="block px-4 py-3 rounded-lg border border-ink-200 dark:border-[#1F2937] hover:bg-ink-50 dark:hover:bg-ink-900 no-underline text-ink-900 dark:text-ink-50 font-medium">
+            {p.label} <span class="text-ink-500 font-normal">→</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    <div class="mt-10 text-center">
+      <a href="/" class="btn-primary">Back to home</a>
+    </div>
+  </section>
+</BaseLayout>

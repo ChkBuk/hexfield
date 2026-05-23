@@ -1,0 +1,233 @@
+---
+import SlidesLayout from '~/layouts/SlidesLayout.astro';
+import { SITE } from '~/config/site';
+import { breadcrumbSchema, faqSchema } from '~/lib/schema';
+
+const title = `${SITE.name} | ${SITE.tagline}`;
+const description = SITE.description;
+
+const marqueeItems = [
+  'Forms Digitalization', 'Web Design', 'MERN Stack', 'Java + Spring Boot',
+  'Oracle · PostgreSQL', 'System Design', 'SEO', 'Adelaide ↔ Worldwide',
+];
+
+// What I Do — three-card summary.
+const offers = [
+  {
+    num: '01',
+    title: 'Forms Digitalization',
+    href: '/services/#forms',
+    desc: 'Paper and PDF forms turned into smart, fillable digital systems with automated capture, validation and e-signatures.',
+  },
+  {
+    num: '02',
+    title: 'Web Design & Development',
+    href: '/services/#web',
+    desc: 'Modern, responsive, SEO-optimised websites built with the MERN stack, Java, and other production-grade frameworks.',
+  },
+  {
+    num: '03',
+    title: 'System Design & Development',
+    href: '/services/#systems',
+    desc: 'Custom business systems built to scale — inventory, CRM, custom backends — powered by Oracle or PostgreSQL.',
+  },
+];
+
+const trustPoints = [
+  { value: 'Solo',        label: 'No layers, no PMs' },
+  { value: 'Direct',      label: 'Talk to the builder' },
+  { value: 'End-to-end',  label: 'Design → ship → support' },
+  { value: 'Adelaide',    label: 'AU-based, worldwide remote' },
+];
+
+const faqs = [
+  { q: 'Do you work with international clients?',                a: 'Yes. I am based in Adelaide, South Australia but work with clients across the globe — from local startups to international businesses.' },
+  { q: 'What does "solo full-stack" actually mean for me?',       a: 'You speak directly with the person building your system. No project managers, no handoffs, no junior engineers shadowing. Faster decisions and lower overhead.' },
+  { q: 'Which technologies do you specialise in?',                a: 'MERN (MongoDB, Express, React, Node), Java with Spring Boot, Oracle and PostgreSQL on the database side, plus modern SEO tooling. I pick the right tool for the problem.' },
+  { q: 'Can you support and maintain what you build?',            a: 'Yes. I build it, I support it. Full accountability with no vendor handoff to a separate "maintenance team".' },
+];
+
+const schemas = [
+  breadcrumbSchema([{ name: 'Home', path: '/' }]),
+  faqSchema(faqs),
+];
+
+const slideCount = 5;
+---
+<SlidesLayout {title} {description} path="/" {schemas} {slideCount}>
+
+  <!-- ─── Slide 1: Hero (DARK) ─────────────────────────────────────── -->
+  <section class="slide slide-dark hero-slide" data-variant="dark">
+    <div class="slide-inner">
+      <p class="slide-eyebrow">{SITE.tagline}</p>
+      <div class="grid lg:grid-cols-12 gap-10 items-end mt-4">
+        <div class="lg:col-span-9">
+          <h1 class="h-display">
+            From <span class="hl-pill">Adelaide</span><br/>
+            to the world<br/>
+            One developer,<br/>
+            full-stack mastery
+          </h1>
+        </div>
+        <div class="lg:col-span-3 flex flex-col justify-end gap-6">
+          <div class="hero-lead">
+            <p class="lead" style="font-size: 0.95rem;">Forms. Websites. Systems. Solutions.</p>
+            <p class="lead" style="font-size: 0.95rem; margin-top: 8px;">Built end-to-end by one expert, for your entire business.</p>
+          </div>
+          <a href="/contact/" class="btn-pill-lime self-start">
+            Get a free quote
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M7 17 L17 7 M9 7 H17 V15" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Marquee at the bottom edge of slide 1 -->
+    <div style="position: absolute; left: 0; right: 0; bottom: 72px;">
+      <div class="marquee">
+        <div class="marquee__track">
+          {[...marqueeItems, ...marqueeItems].map((item) => (
+            <span class="marquee__item">
+              {item}
+              <svg class="marquee__star" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 2 L13.5 9.5 L21 11 L13.5 12.5 L12 22 L10.5 12.5 L3 11 L10.5 9.5 Z" fill="#0F1014"/>
+              </svg>
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Slide 2: What I Do (LIME) — dark cards row ───────────────── -->
+  <section class="slide slide-tint" data-variant="tint">
+    <div class="slide-inner">
+      <div class="grid lg:grid-cols-12 gap-8 items-end mb-12">
+        <div class="lg:col-span-7">
+          <p class="slide-eyebrow">What I do</p>
+          <h2 class="h-display">Three practices<br/>One accountable<br/>developer</h2>
+        </div>
+        <div class="lg:col-span-5">
+          <p class="lead">Forms, web, and bespoke systems — delivered by the same person from first sketch to production support. Pick one, or combine.</p>
+        </div>
+      </div>
+
+      <ul class="grid gap-px md:grid-cols-3 list-none p-0 bg-graphite-900" style="border-radius: 18px; overflow: hidden;">
+        {offers.map((o) => (
+          <li><a href={o.href} class="dark-card no-underline" style="border-radius: 0; min-height: 260px;">
+            <p style="color: rgba(255,255,255,0.4); font-size: 12px; font-weight: 700; letter-spacing: 0.1em;">{o.num}</p>
+            <h3>{o.title}</h3>
+            <div class="dark-card__divider"></div>
+            <p>{o.desc}</p>
+            <span class="mt-auto inline-flex items-center gap-2 font-bold text-sm" style="color: #C8F031;">Learn more →</span>
+          </a></li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- ─── Slide 3: Why solo (DARK) ─────────────────────────────────── -->
+  <section class="slide slide-dark" data-variant="dark">
+    <div class="slide-inner">
+      <div class="grid lg:grid-cols-12 gap-10 items-center">
+        <div class="lg:col-span-2 hidden lg:block">
+          <a href="/about/" class="cta-badge">
+            <svg viewBox="0 0 168 168" class="cta-badge__ring" aria-hidden="true">
+              <defs><path id="cta-badge-curve" d="M 84 84 m -64 0 a 64 64 0 1 1 128 0 a 64 64 0 1 1 -128 0" /></defs>
+              <text font-family="Roboto, sans-serif" font-size="11" font-weight="700" fill="#FFFFFF" letter-spacing="3.5">
+                <textPath href="#cta-badge-curve">ONE DEVELOPER · END-TO-END · </textPath>
+              </text>
+            </svg>
+            <div class="cta-badge__core">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                <path d="M7 17 L17 7 M9 7 H17 V15" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </a>
+        </div>
+        <div class="lg:col-span-10">
+          <p class="slide-eyebrow">Why solo</p>
+          <h2 class="h-display">You speak to<br/>the <span class="hl-pill">person building</span><br/>your system</h2>
+          <p class="lead mt-6">No project managers. No handoffs. No junior engineers shadowing the work. Direct communication with the developer means faster decisions, lower overhead and full accountability — same person from scoping through to production support.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Slide 4: Trust + projects link (LIME) ────────────────────── -->
+  <section class="slide slide-tint" data-variant="tint">
+    <div class="slide-inner">
+      <div class="grid lg:grid-cols-12 gap-8 items-end mb-12">
+        <div class="lg:col-span-7">
+          <p class="slide-eyebrow">How I work</p>
+          <h2 class="h-display">Direct · End-to-end<br/>Documented</h2>
+        </div>
+        <div class="lg:col-span-5">
+          <p class="lead">Every project comes with clean code, written documentation and direct access to the developer.</p>
+        </div>
+      </div>
+
+      <div class="grid gap-5 lg:grid-cols-12 items-stretch">
+        <ul class="lg:col-span-7 grid grid-cols-2 gap-px list-none p-0 bg-graphite-900" style="border-radius: 18px; overflow: hidden;">
+          {trustPoints.map((s) => (
+            <li class="dark-card" style="border-radius: 0; min-height: 160px; align-items: flex-start; justify-content: flex-end;">
+              <div style="font-size: clamp(1.75rem, 3.2vw, 2.75rem); font-weight: 800; color: #C8F031; letter-spacing: -0.04em; line-height: 1;">{s.value}</div>
+              <div style="color: rgba(255,255,255,0.6); font-size: 13px; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700;">{s.label}</div>
+            </li>
+          ))}
+        </ul>
+        <a href="/portfolio/" class="lg:col-span-5 lime-card no-underline" style="background: #FFFFFF;">
+          <p class="slide-eyebrow" style="margin-bottom: 6px;">Recent work</p>
+          <h3 style="font-size: clamp(1.15rem, 1.7vw, 1.4rem); text-transform: uppercase; letter-spacing: -0.01em;">Three production systems, all built and maintained solo.</h3>
+          <ul class="space-y-2 mt-2 list-none p-0">
+            <li class="lime-card__check">tidyshines.com.au — MERN + SEO</li>
+            <li class="lime-card__check">euroheaven.com.au — Java + PostgreSQL</li>
+            <li class="lime-card__check">pathikula.lk — Oracle full-stack</li>
+          </ul>
+          <span class="mt-auto inline-flex items-center gap-2 font-bold text-sm">
+            See the portfolio
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M7 17 L17 7 M9 7 H17 V15" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Slide 5: Contact CTA (DARK) ──────────────────────────────── -->
+  <section class="slide slide-dark" data-variant="dark">
+    <div class="slide-inner">
+      <div class="grid lg:grid-cols-12 gap-10 items-center">
+        <div class="lg:col-span-7">
+          <p class="slide-eyebrow">Let's build something smart</p>
+          <h2 class="h-display">Get a <span class="hl-pill">free quote</span><br/>in one business day</h2>
+          <p class="lead mt-6 mb-8">Tell me what you're trying to build. I'll come back within one business day with a scope, a fixed fee, and an honest opinion on whether I'm the right fit.</p>
+          <div class="flex flex-wrap gap-3">
+            <a href="/contact/" class="btn-pill-lime">
+              Send a message
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M7 17 L17 7 M9 7 H17 V15" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+            <a href={`mailto:${SITE.email}`} class="btn-pill-ghost">{SITE.email}</a>
+          </div>
+        </div>
+        <aside class="lg:col-span-5 dark-card" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); min-height: 280px;">
+          <p class="slide-eyebrow" style="color: rgba(255,255,255,0.5); margin-bottom: 6px;">Based in</p>
+          <dl class="grid gap-4 text-sm mt-2">
+            <div>
+              <dt style="color: rgba(255,255,255,0.5); text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em; font-weight: 700;">Address</dt>
+              <dd style="color: rgba(255,255,255,0.9); margin-top: 4px;">{SITE.address.street}<br/>{SITE.address.locality} {SITE.address.region} {SITE.address.postalCode}</dd>
+            </div>
+            <div>
+              <dt style="color: rgba(255,255,255,0.5); text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em; font-weight: 700;">Service area</dt>
+              <dd style="color: rgba(255,255,255,0.9); margin-top: 4px;">{SITE.serviceArea}</dd>
+            </div>
+            <div>
+              <dt style="color: rgba(255,255,255,0.5); text-transform: uppercase; font-size: 11px; letter-spacing: 0.1em; font-weight: 700;">ABN · ACN</dt>
+              <dd style="color: rgba(255,255,255,0.9); margin-top: 4px;">ABN {SITE.abn} · ACN {SITE.acn}</dd>
+            </div>
+          </dl>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+</SlidesLayout>
