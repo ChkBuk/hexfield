@@ -998,6 +998,14 @@ body:has(#mobile-menu-toggle:checked) { overflow: hidden; }
   .slide .grid { gap: 16px !important; }
 }
 
+/* Tablet (769–1024 px) — keep the desktop layout (nav, header height,
+   typography, etc.) but apply the same generous slide bottom padding as
+   mobile so the fixed slides-footer never covers slide content. */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .slide { padding-bottom: 128px; }
+  .slide.hero-slide { padding-bottom: 170px; }
+}
+
 /* Very short viewports (landscape phones, tiny laptops). Hide non-essential
    decorative bits so the focal content fits. */
 @media (max-height: 640px) {
