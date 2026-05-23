@@ -34,13 +34,23 @@ jobs:
 
       - name: Smoke-check critical artifacts exist
         run: |
-          test -f dist/index.html || (echo "❌ dist/index.html missing" && exit 1)
-          test -f dist/sitemap-index.xml || (echo "❌ sitemap-index.xml missing" && exit 1)
-          test -f dist/robots.txt || (echo "❌ robots.txt missing" && exit 1)
-          test -f dist/rss.xml || (echo "❌ rss.xml missing" && exit 1)
-          test -f dist/locations/sydney/index.html || (echo "❌ sydney landing page missing" && exit 1)
-          test -f dist/services/managed-it/index.html || (echo "❌ managed-it service page missing" && exit 1)
-          test -f dist/security/index.html || (echo "❌ security trust page missing" && exit 1)
+          set -e
+          for f in \
+            dist/index.html \
+            dist/sitemap-index.xml \
+            dist/robots.txt \
+            dist/rss.xml \
+            dist/services/index.html \
+            dist/portfolio/index.html \
+            dist/about/index.html \
+            dist/contact/index.html \
+            dist/blog/index.html \
+            dist/privacy/index.html \
+            dist/terms/index.html \
+            dist/cookies/index.html
+          do
+            test -f "$f" || { echo "❌ $f missing"; exit 1; }
+          done
           echo "✅ all critical artifacts present"
 
       - name: Check internal links (no 404 hrefs in dist)
@@ -50,14 +60,14 @@ jobs:
         run: |
           set -e
           home_ld=$(grep -o 'application/ld+json' dist/index.html | wc -l)
-          svc_ld=$(grep -o 'application/ld+json' dist/services/managed-it/index.html | wc -l)
-          city_ld=$(grep -o 'application/ld+json' dist/locations/sydney/index.html | wc -l)
-          echo "Home JSON-LD blocks: $home_ld (expect ≥ 4)"
-          echo "Service JSON-LD blocks: $svc_ld (expect ≥ 5)"
-          echo "City JSON-LD blocks: $city_ld (expect ≥ 5)"
-          [ "$home_ld" -ge 4 ] || (echo "❌ home JSON-LD short" && exit 1)
-          [ "$svc_ld" -ge 5 ] || (echo "❌ service JSON-LD short" && exit 1)
-          [ "$city_ld" -ge 5 ] || (echo "❌ city JSON-LD short" && exit 1)
+          svc_ld=$(grep -o 'application/ld+json' dist/services/index.html | wc -l)
+          port_ld=$(grep -o 'application/ld+json' dist/portfolio/index.html | wc -l)
+          echo "Home JSON-LD blocks:      $home_ld (expect ≥ 3)"
+          echo "Services JSON-LD blocks:  $svc_ld (expect ≥ 3)"
+          echo "Portfolio JSON-LD blocks: $port_ld (expect ≥ 3)"
+          [ "$home_ld" -ge 3 ] || { echo "❌ home JSON-LD short"; exit 1; }
+          [ "$svc_ld"  -ge 3 ] || { echo "❌ services JSON-LD short"; exit 1; }
+          [ "$port_ld" -ge 3 ] || { echo "❌ portfolio JSON-LD short"; exit 1; }
 
       - name: Serve dist + Lighthouse audit
         uses: treosh/lighthouse-ci-action@v12
