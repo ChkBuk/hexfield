@@ -829,17 +829,19 @@ body:has(#mobile-menu-toggle:checked) { overflow: hidden; }
   .slide {
     /* On mobile the slide content is a tight, vertically-centered cluster
        — like a classic landing-page hero. align-content: safe center keeps
-       the cluster mid-screen; if it ever overflows, it falls back to top. */
-    padding: 88px 20px 88px;
+       the cluster mid-screen; if it ever overflows, it falls back to top.
+       Bottom padding clears the 56-px fixed slides-footer with ~72 px of
+       visual breathing room above the dots. */
+    padding: 88px 20px 128px;
     align-content: safe center;
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-y: contain;
   }
-  /* Hero on mobile reserves room for the marquee + a bit more breathing
-     room at the top so the cluster sits visually centered above it. */
-  .slide.hero-slide { padding-bottom: 130px; padding-top: 96px; }
+  /* Hero on mobile reserves additional room for the marquee that sits
+     just above the footer. */
+  .slide.hero-slide { padding-bottom: 170px; padding-top: 96px; }
 
   /* Content cluster: one centered column with consistent rhythm. No
      `min-height: 100%` — let the content's natural height define the
