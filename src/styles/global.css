@@ -1000,9 +1000,17 @@ body:has(#mobile-menu-toggle:checked) { overflow: hidden; }
 
 /* Tablet (769–1024 px) — keep the desktop layout (nav, header height,
    typography, etc.) but apply the same generous slide bottom padding as
-   mobile so the fixed slides-footer never covers slide content. */
+   mobile AND enable internal vertical scroll so tall slides (e.g. the
+   contact form) don't get clipped by the slide's overflow:hidden. */
 @media (min-width: 769px) and (max-width: 1024px) {
-  .slide { padding-bottom: 128px; }
+  .slide {
+    padding-bottom: 128px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+    align-content: safe center;
+  }
   .slide.hero-slide { padding-bottom: 170px; }
 }
 
