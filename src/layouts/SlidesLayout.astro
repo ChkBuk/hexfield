@@ -2,6 +2,7 @@
 // Slide-deck layout — used by all primary nav pages. Subpages (blog posts,
 // privacy etc.) keep BaseLayout so SEO + scroll behaviour is unchanged.
 import '~/styles/global.css';
+import { ViewTransitions } from 'astro:transitions';
 import Seo from '~/components/Seo.astro';
 import JsonLd from '~/components/JsonLd.astro';
 import Logo from '~/components/Logo.astro';
@@ -53,8 +54,16 @@ const initialThemeColor =
     <JsonLd data={organizationSchema} />
     <JsonLd data={websiteSchema} />
     {schemas.map((s) => <JsonLd data={s} />)}
+
+    <!-- Astro View Transitions: cross-page fade + per-element morphing. -->
+    <ViewTransitions />
   </head>
   <body class={bodyClass}>
+    <!-- Top loading bar — driven by Astro View Transition events.
+         transition:persist keeps the same DOM node across SPA navs so
+         the loader can stay mounted and re-fire each navigation. -->
+    <div class="page-loader" data-page-loader aria-hidden="true" transition:persist></div>
+
     <a href="#main" class="sr-only focus:not-sr-only fixed top-2 left-2 z-50 bg-mute text-white rounded">
       Skip to main content
     </a>
@@ -161,6 +170,7 @@ const initialThemeColor =
 
     <script>
       import '~/scripts/slide-engine.ts';
+      import '~/scripts/motion.ts';
     </script>
   </body>
 </html>

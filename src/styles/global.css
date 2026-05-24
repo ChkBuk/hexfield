@@ -1268,3 +1268,119 @@ body:has(#mobile-menu-toggle:checked) { overflow: hidden; }
 .slides-body input[type="file"].input::file-selector-button:hover {
   background: #2D2F36;
 }
+
+/* ───────────────────────────────────────────────────────────────────
+   Motion: page transitions, loading bar, scroll/slide reveals
+   ───────────────────────────────────────────────────────────────────
+
+   Three coordinated systems:
+   1. Astro View Transitions (cross-page) — handled via the <ViewTransitions/>
+      component + ::view-transition-* pseudo-elements.
+   2. Page loader — a thin lime bar at the top, driven by the
+      'astro:before-preparation' / 'astro:page-load' events.
+   3. Reveal animations — content fades + slides up when its slide
+      becomes active (on slide-deck pages) or when it enters the viewport
+      (on static pages).
+*/
+
+/* 1) Cross-page fade — overrides Astro's default cross-fade with a faster,
+   smoother curve. Respects prefers-reduced-motion. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 320ms;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+::view-transition-old(root) {
+  animation-name: page-fade-out;
+}
+::view-transition-new(root) {
+  animation-name: page-fade-in;
+}
+@keyframes page-fade-out {
+  to { opacity: 0; transform: translateY(-6px); }
+}
+@keyframes page-fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+}
+
+/* 2) Page loader — thin lime bar at the top of the viewport. Starts at 0%
+   on navigation, animates to 80% over 600ms (indeterminate), then snaps
+   to 100% + fades when the new page is interactive. */
+.page-loader {
+  position: fixed;
+  top: 0; left: 0;
+  width: 0;
+  height: 2px;
+  background: #C8F031;
+  z-index: 1000;
+  opacity: 0;
+  transition: width 600ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 200ms ease;
+  pointer-events: none;
+}
+.page-loader.is-loading {
+  opacity: 1;
+  width: 80%;
+}
+.page-loader.is-done {
+  opacity: 0;
+  width: 100%;
+  transition: width 180ms ease, opacity 280ms ease 120ms;
+}
+/* Tint loader on dark/lime slides so it stays visible. */
+.slides-body.slide-tint-active .page-loader { background: #0F1014; }
+
+/* 3a) Slide-content reveal — when a slide becomes active, fade + slide
+   its direct children up into place. Triggered by JS toggling
+   `.is-active` on the .slide element. */
+.slide .slide-inner > *,
+.slide .slide-inner > div > * {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 540ms cubic-bezier(0.2, 0.8, 0.2, 1),
+              transform 540ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.slide.is-active .slide-inner > *,
+.slide.is-active .slide-inner > div > * {
+  opacity: 1;
+  transform: translateY(0);
+}
+/* Stagger: each child is delayed slightly more than the last for a
+   cascading reveal. Use CSS variable so JS can override per-slide. */
+.slide.is-active .slide-inner > *:nth-child(1),
+.slide.is-active .slide-inner > div > *:nth-child(1) { transition-delay: 60ms; }
+.slide.is-active .slide-inner > *:nth-child(2),
+.slide.is-active .slide-inner > div > *:nth-child(2) { transition-delay: 140ms; }
+.slide.is-active .slide-inner > *:nth-child(3),
+.slide.is-active .slide-inner > div > *:nth-child(3) { transition-delay: 220ms; }
+.slide.is-active .slide-inner > *:nth-child(4),
+.slide.is-active .slide-inner > div > *:nth-child(4) { transition-delay: 300ms; }
+.slide.is-active .slide-inner > *:nth-child(5),
+.slide.is-active .slide-inner > div > *:nth-child(5) { transition-delay: 380ms; }
+
+/* 3b) Scroll-reveal — for static pages (BaseLayout) and any element
+   marked with [data-reveal]. Inactive state matches the slide reveal so
+   the visual language is consistent across the site. */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 600ms cubic-bezier(0.2, 0.8, 0.2, 1),
+              transform 600ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+[data-reveal].is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Honour reduced-motion across every system above. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) { animation: none !important; }
+  .page-loader { display: none; }
+  .slide .slide-inner > *,
+  .slide .slide-inner > div > *,
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}

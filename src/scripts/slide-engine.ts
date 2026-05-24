@@ -76,6 +76,19 @@ export class SlideEngine {
     this.commit(false);
   }
 
+  /** Remove all global event listeners and cleanup. Called by init()
+   *  before constructing a new engine on Astro page-load navs so we
+   *  don't leak listeners between SPA navigations. */
+  public destroy(): void {
+    window.removeEventListener('wheel', this.onWheel);
+    window.removeEventListener('touchstart', this.onTouchStart);
+    window.removeEventListener('touchend', this.onTouchEnd);
+    window.removeEventListener('keydown', this.onKey);
+    window.removeEventListener('resize', this.onResize);
+    window.removeEventListener('hashchange', this.onHashChange);
+    window.clearTimeout(this.wheelResetTimer);
+  }
+
   private bind(): void {
     // Wheel — accumulate small deltas so trackpad gestures feel right.
     window.addEventListener('wheel', this.onWheel, { passive: false });
@@ -308,13 +321,27 @@ export class SlideEngine {
 }
 
 // Auto-bootstrap when a viewport + container exist in the DOM.
+// Runs on first load AND after every Astro View Transition nav
+// (astro:page-load fires both times). Stores the engine on window so
+// the previous instance can be destroyed before constructing a new one
+// — otherwise wheel/touch/key listeners accumulate across navigations.
+declare global {
+  interface Window { __hexfieldSlideEngine?: SlideEngine }
+}
+
 function init(): void {
+  window.__hexfieldSlideEngine?.destroy();
+  window.__hexfieldSlideEngine = undefined;
+
   const viewport = document.querySelector<HTMLElement>('[data-slides-viewport]');
   const container = document.querySelector<HTMLElement>('[data-slides-container]');
   if (!viewport || !container) return;
-  new SlideEngine(viewport, container);
+  window.__hexfieldSlideEngine = new SlideEngine(viewport, container);
 }
 
+document.addEventListener('astro:page-load', init);
+
+// Fallback for the very first load before Astro's runtime has wired up.
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', init);
 } else {
