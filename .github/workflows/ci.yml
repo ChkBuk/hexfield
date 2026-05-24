@@ -35,33 +35,35 @@ jobs:
       - name: Smoke-check critical artifacts exist
         run: |
           set -e
+          OUT=.vercel/output/static
           for f in \
-            dist/index.html \
-            dist/sitemap-index.xml \
-            dist/robots.txt \
-            dist/rss.xml \
-            dist/services/index.html \
-            dist/portfolio/index.html \
-            dist/about/index.html \
-            dist/contact/index.html \
-            dist/blog/index.html \
-            dist/privacy/index.html \
-            dist/terms/index.html \
-            dist/cookies/index.html
+            "$OUT/index.html" \
+            "$OUT/sitemap-index.xml" \
+            "$OUT/robots.txt" \
+            "$OUT/rss.xml" \
+            "$OUT/services/index.html" \
+            "$OUT/portfolio/index.html" \
+            "$OUT/about/index.html" \
+            "$OUT/contact/index.html" \
+            "$OUT/blog/index.html" \
+            "$OUT/privacy/index.html" \
+            "$OUT/terms/index.html" \
+            "$OUT/cookies/index.html"
           do
             test -f "$f" || { echo "❌ $f missing"; exit 1; }
           done
           echo "✅ all critical artifacts present"
 
-      - name: Check internal links (no 404 hrefs in dist)
-        run: node scripts/check-internal-links.mjs
+      - name: Check internal links (no 404 hrefs in build output)
+        run: node scripts/check-internal-links.mjs .vercel/output/static
 
       - name: Verify per-page JSON-LD blocks
         run: |
           set -e
-          home_ld=$(grep -o 'application/ld+json' dist/index.html | wc -l)
-          svc_ld=$(grep -o 'application/ld+json' dist/services/index.html | wc -l)
-          port_ld=$(grep -o 'application/ld+json' dist/portfolio/index.html | wc -l)
+          OUT=.vercel/output/static
+          home_ld=$(grep -o 'application/ld+json' "$OUT/index.html" | wc -l)
+          svc_ld=$(grep -o 'application/ld+json' "$OUT/services/index.html" | wc -l)
+          port_ld=$(grep -o 'application/ld+json' "$OUT/portfolio/index.html" | wc -l)
           echo "Home JSON-LD blocks:      $home_ld (expect ≥ 3)"
           echo "Services JSON-LD blocks:  $svc_ld (expect ≥ 3)"
           echo "Portfolio JSON-LD blocks: $port_ld (expect ≥ 3)"
