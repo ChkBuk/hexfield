@@ -1,16 +1,15 @@
 import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 import sitemap from '@astrojs/sitemap';
-import vercel from '@astrojs/vercel/serverless';
-import vercelFix from './scripts/vercel-fix-integration.mjs';
+import vercel from '@astrojs/vercel/static';
 
 export default defineConfig({
   site: 'https://hexfield.com.au',
   trailingSlash: 'always',
-  // Hybrid: every page is static by default; only routes that opt-in via
-  // `export const prerender = false` (currently just /api/contact) ship as
-  // a Vercel serverless function.
-  output: 'hybrid',
+  // Static output — every page is pre-rendered. The contact form's
+  // serverless handler lives at /api/contact.js (native Vercel function,
+  // outside Astro's pipeline), so Astro itself doesn't need a runtime.
+  output: 'static',
   adapter: vercel(),
   compressHTML: true,
   build: {
@@ -27,7 +26,6 @@ export default defineConfig({
     },
   },
   integrations: [
-    vercelFix(),
     tailwind({ applyBaseStyles: false }),
     sitemap({
       changefreq: 'weekly',
