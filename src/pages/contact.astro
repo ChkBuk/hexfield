@@ -15,21 +15,21 @@ const slideCount = 3;
 ---
 <SlidesLayout {title} {description} path="/contact/" schemas={[breadcrumbSchema(crumbs)]} {slideCount} initialVariant="dark">
 
-  <!-- ─── Slide 1: Hero (DARK) ─────────────────────────────────────── -->
+  <!-- ─── Slide 1: Hero (DARK) ─ centred layout, matches home page ── -->
   <section class="slide slide-dark" data-variant="dark">
-    <div class="slide-inner">
-      <div class="grid lg:grid-cols-12 gap-10 items-end">
-        <div class="lg:col-span-9">
-          <p class="slide-eyebrow">Let's build something smart</p>
-          <h1 class="h-display">From <span class="hl-pill">Adelaide</span><br/>to wherever<br/>you are</h1>
-        </div>
-        <div class="lg:col-span-3">
-          <p class="lead mb-6" style="font-size: 1rem;">Tell me what you want to build. I reply within one business day with a scope, a fixed fee and an honest opinion on fit.</p>
-          <div class="flex flex-wrap gap-3">
-            <a href="#slide-2" data-slide-goto="1" class="btn-pill-lime">Send a message</a>
-            <a href={`mailto:${SITE.email}`} class="btn-pill-ghost">{SITE.email}</a>
-          </div>
-        </div>
+    <div class="slide-inner hero-center">
+      <p class="slide-eyebrow">Let's build something smart</p>
+      <h1 class="h-display hero-center__h1">
+        From <span class="hl-pill">Adelaide</span><br/>
+        to wherever you are
+      </h1>
+      <p class="lead hero-center__lead">Tell me what you want to build. I reply within one business day with a scope, a fixed fee and an honest opinion on fit.</p>
+      <div class="hero-center__cta flex flex-wrap gap-3 justify-center">
+        <a href="#slide-2" data-slide-goto="1" class="btn-pill-lime">
+          Send a message
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M7 17 L17 7 M9 7 H17 V15" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <a href={`mailto:${SITE.email}`} class="btn-pill-ghost">{SITE.email}</a>
       </div>
     </div>
   </section>

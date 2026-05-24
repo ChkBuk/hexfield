@@ -21,19 +21,15 @@ const slideCount = posts.length > 0 ? 3 : 2;
 ---
 <SlidesLayout {title} {description} path="/blog/" schemas={[breadcrumbSchema(crumbs)]} {slideCount} initialVariant="dark">
 
-  <!-- ─── Slide 1: Hero + search (DARK) ───────────────────────────── -->
+  <!-- ─── Slide 1: Hero + search (DARK) ─ centred, matches home page ─ -->
   <section class="slide slide-dark" data-variant="dark">
-    <div class="slide-inner">
-      <div class="grid lg:grid-cols-12 gap-10 items-end mb-10">
-        <div class="lg:col-span-9">
-          <p class="slide-eyebrow">Insights</p>
-          <h1 class="h-display">Notes from<br/>the <span class="hl-pill">developer</span></h1>
-        </div>
-        <div class="lg:col-span-3">
-          <p class="lead mb-6" style="font-size: 1rem;">Short, opinionated writing on forms digitalisation, full-stack development, and SEO that actually moves the needle.</p>
-        </div>
-      </div>
-      <div style="max-width: 640px;">
+    <div class="slide-inner hero-center">
+      <p class="slide-eyebrow">Insights</p>
+      <h1 class="h-display hero-center__h1">
+        Notes from<br/>the <span class="hl-pill">developer</span>
+      </h1>
+      <p class="lead hero-center__lead">Short, opinionated writing on forms digitalisation, full-stack development, and SEO that actually moves the needle.</p>
+      <div class="hero-center__cta" style="width: 100%; max-width: 640px;">
         <SiteSearch placeholder="Search the site…" />
       </div>
     </div>

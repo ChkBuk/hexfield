@@ -140,14 +140,27 @@
   align-items: center;
   justify-content: space-between;
   z-index: 60;
-  background: #FFFFFF;
+  /* Solid bands at the left + right 25 %, transparent gap through the
+     middle 50 % — lets the slide background image show through the
+     centre of the header. Edges stay opaque so the logo and nav links
+     remain crisp against their own colour. */
+  background: linear-gradient(
+    to right,
+    var(--header-bg, #FFFFFF) 0%,
+    var(--header-bg, #FFFFFF) 22%,
+    transparent 62%,
+    transparent 68%,
+    var(--header-bg, #FFFFFF) 78%,
+    var(--header-bg, #FFFFFF) 80%
+  );
   border-bottom: 1px solid #E5E7EB;
   transition: background 250ms ease, border-color 250ms ease;
 }
-/* Header background dynamically follows the active slide variant so the
-   top "safe area" (iPhone notch zone) appears as one continuous colour. */
-.slides-body.slide-tint-active .slides-header { background: #C8F031; border-bottom-color: rgba(15, 16, 20, 0.08); }
-.slides-body.slide-dark-active .slides-header { background: #0F1014; border-bottom-color: rgba(255, 255, 255, 0.1); }
+/* Header background dynamically follows the active slide variant. The
+   --header-bg variable feeds the linear-gradient so only the side bands
+   change colour; the middle 50 % stays transparent. */
+.slides-body.slide-tint-active .slides-header { --header-bg: #C8F031; border-bottom-color: rgba(15, 16, 20, 0.08); }
+.slides-body.slide-dark-active .slides-header { --header-bg: #0F1014; border-bottom-color: rgba(255, 255, 255, 0.1); }
 
 /* Default header (light slides) */
 .slides-header .nav-link {
@@ -198,12 +211,13 @@
      scrolls vertically instead. */
   align-content: safe center;
   /* Top: clear the header + iOS notch. Bottom: clear the iOS home-indicator
-     and leave a touch of breathing room. Right padding makes room for the
-     vertical dots rail (40-px column). Side padding stays responsive. */
+     and leave a touch of breathing room. SYMMETRIC horizontal padding so
+     content stays truly centred — the right dash rail sits at right:14-28px
+     (inside this padding zone) and never overlaps the content area. */
   padding-top:    calc(112px + env(safe-area-inset-top));
   padding-bottom: calc(56px + env(safe-area-inset-bottom));
-  padding-left:   clamp(20px, 6vw, 80px);
-  padding-right:  clamp(56px, 6vw, 96px);
+  padding-left:   clamp(32px, 5vw, 80px);
+  padding-right:  clamp(32px, 5vw, 80px);
   /* Allow vertical scrolling within a slide when content overflows. The
      slide-engine watches scrollTop and only advances to the next/prev slide
      once the user pushes past the top or bottom edge. */
@@ -501,7 +515,7 @@
 .hero-orb--3 {
   width: 520px; height: 420px;
   bottom: -110px; right: 2%;
-  opacity: 0.92;
+  opacity: 0.35;
   border-radius: 70% 30% 58% 42% / 40% 65% 35% 60%;
   background: radial-gradient(ellipse at 60% 55%,
     rgba(200, 240, 49, 0.98) 0%,
@@ -1163,8 +1177,11 @@ body:has(#mobile-menu-toggle:checked) { overflow: hidden; }
        mid-screen; if it overflows, falls back to start-aligned. */
     padding-top:    calc(96px + env(safe-area-inset-top));
     padding-bottom: calc(64px + env(safe-area-inset-bottom));
-    padding-left:   20px;
-    padding-right:  56px; /* room for right-rail dots */
+    /* SYMMETRIC horizontal padding so content is truly centred on mobile.
+       The dash rail (right:10px, ~3px wide) sits inside the right padding
+       and doesn't overlap text. */
+    padding-left:   24px;
+    padding-right:  24px;
     align-content: safe center;
     -webkit-overflow-scrolling: touch;
   }
@@ -1254,9 +1271,8 @@ body:has(#mobile-menu-toggle:checked) { overflow: hidden; }
     margin-bottom: 0;
   }
 
-  /* Headlines on mobile: slightly bigger for visual impact. */
-  .slide h1.h-display { font-size: clamp(2rem, 8vw, 3.5rem); line-height: 1.04; }
-  .slide h2.h-display { font-size: clamp(1.625rem, 6.5vw, 2.75rem); line-height: 1.06; }
+  /* (Heading sizes consolidated into the single rule lower in this
+     media query — see "Display headings" block.) */
 
   /* Lead text constrained for comfortable reading. */
   .slide p.lead {
@@ -1276,13 +1292,14 @@ body:has(#mobile-menu-toggle:checked) { overflow: hidden; }
   }
   .slide .lime-card__check { justify-content: flex-start; }
 
-  /* Display headings — much smaller min so long copy doesn't overflow.
-     6.5vw on a 360-px-wide viewport ≈ 23 px which is fine. */
-  .slide h1.h-display { font-size: clamp(1.625rem, 6.5vw, 2.75rem); line-height: 1.06; }
-  .slide h2.h-display { font-size: clamp(1.5rem,   6vw,   2.5rem);  line-height: 1.08; }
-  .slide h1            { font-size: clamp(1.625rem, 6vw, 2.5rem); }
-  .slide h2            { font-size: clamp(1.375rem, 5.5vw, 2.25rem); }
-  .slide p.lead        { font-size: 0.875rem; line-height: 1.5; max-width: 100%; }
+  /* Display headings — bumped for mobile so the hero actually feels like
+     a hero. 10vw on a 390-px viewport ≈ 39 px (≈ 2.4rem), and the upper
+     clamp (4rem = 64 px) caps it on the largest tablets. */
+  .slide h1.h-display { font-size: clamp(2.25rem, 10vw, 4rem);   line-height: 1.02; }
+  .slide h2.h-display { font-size: clamp(1.875rem, 8vw, 3.25rem); line-height: 1.06; }
+  .slide h1            { font-size: clamp(2rem,    8vw, 3rem); }
+  .slide h2            { font-size: clamp(1.625rem, 6.5vw, 2.5rem); }
+  .slide p.lead        { font-size: 1rem;   line-height: 1.55; max-width: 100%; }
   .slide-eyebrow       { font-size: 11px; margin-bottom: 12px; }
 
   /* Cards: compact padding + smaller copy. */

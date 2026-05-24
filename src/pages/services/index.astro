@@ -79,19 +79,19 @@ const slideCount = 1 + services.length + 1;
 ---
 <SlidesLayout {title} {description} path="/services/" schemas={[breadcrumbSchema(crumbs)]} {slideCount} initialVariant="dark">
 
-  <!-- ─── Slide 1: Hero (DARK) ─────────────────────────────────────── -->
+  <!-- ─── Slide 1: Hero (DARK) ─ centred layout, matches home page ── -->
   <section class="slide slide-dark" data-variant="dark">
-    <div class="slide-inner">
-      <div class="grid lg:grid-cols-12 gap-10 items-end">
-        <div class="lg:col-span-9">
-          <p class="slide-eyebrow">What I offer</p>
-          <h1 class="h-display">Five services<br/>One <span class="hl-pill">developer</span><br/>End-to-end</h1>
-        </div>
-        <div class="lg:col-span-3">
-          <p class="lead mb-6" style="font-size: 1rem;">From smart digital forms to enterprise web apps — built, deployed and maintained by the same person.</p>
-          <a href="/contact/" class="btn-pill-lime">Get a free quote</a>
-        </div>
-      </div>
+    <div class="slide-inner hero-center">
+      <p class="slide-eyebrow">What I offer</p>
+      <h1 class="h-display hero-center__h1">
+        Five services<br/>
+        One <span class="hl-pill">developer</span>
+      </h1>
+      <p class="lead hero-center__lead">From smart digital forms to enterprise web apps — built, deployed and maintained by the same person.</p>
+      <a href="/contact/" class="btn-pill-lime hero-center__cta">
+        Get a free quote
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M7 17 L17 7 M9 7 H17 V15" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
     </div>
   </section>
 

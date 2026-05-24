@@ -24,19 +24,18 @@ const slideCount = 4;
 ---
 <SlidesLayout {title} {description} path="/about/" schemas={[breadcrumbSchema(crumbs)]} {slideCount} initialVariant="dark">
 
-  <!-- ─── Slide 1: Hero (DARK) ─────────────────────────────────────── -->
+  <!-- ─── Slide 1: Hero (DARK) ─ centred layout, matches home page ── -->
   <section class="slide slide-dark" data-variant="dark">
-    <div class="slide-inner">
-      <div class="grid lg:grid-cols-12 gap-10 items-end">
-        <div class="lg:col-span-9">
-          <p class="slide-eyebrow">About</p>
-          <h1 class="h-display">Hi, I'm<br/><span class="hl-pill">Charith</span></h1>
-        </div>
-        <div class="lg:col-span-3">
-          <p class="lead mb-6" style="font-size: 1rem;">A solo full-stack developer based in Adelaide, South Australia, working with clients across the globe — from local startups to international businesses.</p>
-          <a href="/contact/" class="btn-pill-lime">Work with me</a>
-        </div>
-      </div>
+    <div class="slide-inner hero-center">
+      <p class="slide-eyebrow">About</p>
+      <h1 class="h-display hero-center__h1">
+        Hi, I'm <span class="hl-pill">Charith</span>
+      </h1>
+      <p class="lead hero-center__lead">A solo full-stack developer based in Adelaide, South Australia, working with clients across the globe — from local startups to international businesses.</p>
+      <a href="/contact/" class="btn-pill-lime hero-center__cta">
+        Work with me
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M7 17 L17 7 M9 7 H17 V15" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
     </div>
   </section>
 
