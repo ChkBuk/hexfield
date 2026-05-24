@@ -1,11 +1,6 @@
-// Native Vercel serverless function for the contact form.
-// Lives outside Astro's pipeline so it sidesteps the @astrojs/vercel@7
-// adapter's broken function-bundling (nested .vercel/output/_functions/
-// path gets stripped at deploy, causing ERR_MODULE_NOT_FOUND).
-//
-// Vercel auto-discovers files in /api/ at the project root and deploys
-// each as its own serverless function. URL: /api/contact (no slash —
-// Vercel native functions do NOT use trailing slashes).
+// Native Vercel serverless function — Node.js style (req, res).
+// Uses .mjs for explicit ESM (avoids any auto-detection ambiguity from
+// the parent package.json "type":"module").
 //
 // Required environment variables (set in Vercel dashboard):
 //   RESEND_API_KEY       — Resend API key (required)
@@ -14,10 +9,7 @@
 
 import { Resend } from 'resend';
 import { Buffer } from 'node:buffer';
-
-// Vercel native functions take 'nodejs' here; the actual Node major
-// comes from engines.node in package.json (set to 20.x).
-export const config = { runtime: 'nodejs' };
+import { parse as parseQS } from 'node:querystring';
 
 const FROM_NAME = 'Hexfield Website';
 const MAX_FILE_BYTES = 10 * 1024 * 1024;
@@ -31,19 +23,68 @@ const SERVICE_LABEL = {
   'other':         'Something else',
 };
 
-function redirect(loc) {
-  return new Response(null, { status: 303, headers: { Location: loc } });
+function redirect(res, loc) {
+  res.statusCode = 303;
+  res.setHeader('Location', loc);
+  res.end();
 }
 
 function escapeHtml(s) {
-  return s.replace(/[<>&"']/g, (c) => ({
+  return String(s).replace(/[<>&"']/g, (c) => ({
     '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;', "'": '&#39;',
   })[c]);
 }
 
-export default async function handler(req) {
+// Read the request body as a Buffer.
+function readBody(req) {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    req.on('data', (c) => chunks.push(c));
+    req.on('end',  ()  => resolve(Buffer.concat(chunks)));
+    req.on('error', reject);
+  });
+}
+
+// Minimal multipart/form-data parser. Returns { fields, files }.
+// Sufficient for our flat form (5 text fields + 1 optional file).
+function parseMultipart(buf, boundary) {
+  const fields = {};
+  const files  = {};
+  const delim = Buffer.from('--' + boundary);
+  const close = Buffer.from('--' + boundary + '--');
+  let start = 0;
+  while (start < buf.length) {
+    const next = buf.indexOf(delim, start);
+    if (next === -1) break;
+    if (buf.compare(close, 0, close.length, next, next + close.length) === 0) break;
+    const partStart = next + delim.length + 2; // +CRLF
+    const partEnd = buf.indexOf(delim, partStart);
+    if (partEnd === -1) break;
+    const part = buf.subarray(partStart, partEnd - 2); // strip trailing CRLF
+    const headerEnd = part.indexOf('\r\n\r\n');
+    if (headerEnd === -1) { start = partEnd; continue; }
+    const headers = part.subarray(0, headerEnd).toString('utf8');
+    const body    = part.subarray(headerEnd + 4);
+    const nameMatch = headers.match(/name="([^"]+)"/i);
+    const fileMatch = headers.match(/filename="([^"]*)"/i);
+    if (nameMatch) {
+      const name = nameMatch[1];
+      if (fileMatch) {
+        files[name] = { filename: fileMatch[1], content: body, size: body.length };
+      } else {
+        fields[name] = body.toString('utf8');
+      }
+    }
+    start = partEnd;
+  }
+  return { fields, files };
+}
+
+export default async function handler(req, res) {
   if (req.method !== 'POST') {
-    return new Response('Method Not Allowed', { status: 405 });
+    res.statusCode = 405;
+    res.end('Method Not Allowed');
+    return;
   }
 
   const RESEND_API_KEY = process.env.RESEND_API_KEY;
@@ -52,46 +93,56 @@ export default async function handler(req) {
 
   if (!RESEND_API_KEY) {
     console.error('[contact] RESEND_API_KEY is not set');
-    return redirect('/contact/?error=server#slide-2');
+    return redirect(res, '/contact/?error=server#slide-2');
   }
 
-  let formData;
+  let fields = {}, files = {};
   try {
-    formData = await req.formData();
-  } catch {
-    return redirect('/contact/?error=bad-request#slide-2');
+    const buf = await readBody(req);
+    const ctype = req.headers['content-type'] || '';
+    if (ctype.startsWith('multipart/form-data')) {
+      const m = ctype.match(/boundary=([^;]+)/);
+      if (!m) return redirect(res, '/contact/?error=bad-request#slide-2');
+      ({ fields, files } = parseMultipart(buf, m[1].trim().replace(/^"|"$/g, '')));
+    } else if (ctype.startsWith('application/x-www-form-urlencoded')) {
+      fields = parseQS(buf.toString('utf8'));
+    } else {
+      return redirect(res, '/contact/?error=bad-request#slide-2');
+    }
+  } catch (err) {
+    console.error('[contact] body parse failed:', err);
+    return redirect(res, '/contact/?error=bad-request#slide-2');
   }
 
   // Honeypot
-  if (String(formData.get('company-website') || '').length > 0) {
-    return redirect('/contact/thanks/');
+  if (String(fields['company-website'] || '').length > 0) {
+    return redirect(res, '/contact/thanks/');
   }
 
-  const name    = String(formData.get('name')    ?? '').trim();
-  const email   = String(formData.get('email')   ?? '').trim();
-  const company = String(formData.get('company') ?? '').trim();
-  const service = String(formData.get('service') ?? '').trim();
-  const message = String(formData.get('message') ?? '').trim();
-  const consent = formData.get('consent');
+  const name    = String(fields.name    ?? '').trim();
+  const email   = String(fields.email   ?? '').trim();
+  const company = String(fields.company ?? '').trim();
+  const service = String(fields.service ?? '').trim();
+  const message = String(fields.message ?? '').trim();
+  const consent = fields.consent;
 
   if (!name || !email || !service || !message || !consent) {
-    return redirect('/contact/?error=missing#slide-2');
+    return redirect(res, '/contact/?error=missing#slide-2');
   }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    return redirect('/contact/?error=invalid-email#slide-2');
+    return redirect(res, '/contact/?error=invalid-email#slide-2');
   }
   if (name.length > 200 || email.length > 200 || company.length > 200 || message.length > 5000) {
-    return redirect('/contact/?error=too-long#slide-2');
+    return redirect(res, '/contact/?error=too-long#slide-2');
   }
 
   const attachments = [];
-  const file = formData.get('attachment');
-  if (file && typeof file === 'object' && file.size > 0) {
+  const file = files.attachment;
+  if (file && file.size > 0) {
     if (file.size > MAX_FILE_BYTES) {
-      return redirect('/contact/?error=file-too-large#slide-2');
+      return redirect(res, '/contact/?error=file-too-large#slide-2');
     }
-    const buf = Buffer.from(await file.arrayBuffer());
-    attachments.push({ filename: file.name || 'attachment', content: buf });
+    attachments.push({ filename: file.filename || 'attachment', content: file.content });
   }
 
   const serviceLabel = SERVICE_LABEL[service] ?? service;
@@ -136,13 +187,13 @@ ${attachments.length ? `<p style="margin-top:16px;font-size:13px;color:#6B6E73;"
     });
     if (error) {
       console.error('[contact] Resend error:', error);
-      return redirect('/contact/?error=send-failed#slide-2');
+      return redirect(res, '/contact/?error=send-failed#slide-2');
     }
     console.log('[contact] sent', data?.id);
   } catch (err) {
     console.error('[contact] Unexpected failure:', err);
-    return redirect('/contact/?error=send-failed#slide-2');
+    return redirect(res, '/contact/?error=send-failed#slide-2');
   }
 
-  return redirect('/contact/thanks/');
+  return redirect(res, '/contact/thanks/');
 }
