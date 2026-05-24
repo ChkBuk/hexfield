@@ -568,9 +568,11 @@
   text-decoration: none;
   transition: background 150ms ease, color 150ms ease;
 }
-.btn-pill-ghost:hover { background: currentColor; }
-.btn-pill-ghost:hover { color: #FFFFFF; }
-.slide-dark .btn-pill-ghost:hover { color: #0F1014; }
+/* Hover: invert — fill with the OPPOSITE colour of the slide background.
+   Earlier version used `background: currentColor` which collapsed to bg-on-bg
+   on dark slides (text was black, so background became black too). */
+.btn-pill-ghost:hover { background: #0F1014; color: #FFFFFF; }
+.slide-dark .btn-pill-ghost:hover { background: #FFFFFF; color: #0F1014; }
 
 /* Round arrow-CTA button (like the small lime circle in the Axios pin) */
 .btn-arrow {
