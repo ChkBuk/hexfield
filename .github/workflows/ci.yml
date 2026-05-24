@@ -35,7 +35,7 @@ jobs:
       - name: Smoke-check critical artifacts exist
         run: |
           set -e
-          OUT=.vercel/output/static
+          OUT=dist
           for f in \
             "$OUT/index.html" \
             "$OUT/sitemap-index.xml" \
@@ -55,12 +55,12 @@ jobs:
           echo "✅ all critical artifacts present"
 
       - name: Check internal links (no 404 hrefs in build output)
-        run: node scripts/check-internal-links.mjs .vercel/output/static
+        run: node scripts/check-internal-links.mjs dist
 
       - name: Verify per-page JSON-LD blocks
         run: |
           set -e
-          OUT=.vercel/output/static
+          OUT=dist
           home_ld=$(grep -o 'application/ld+json' "$OUT/index.html" | wc -l)
           svc_ld=$(grep -o 'application/ld+json' "$OUT/services/index.html" | wc -l)
           port_ld=$(grep -o 'application/ld+json' "$OUT/portfolio/index.html" | wc -l)

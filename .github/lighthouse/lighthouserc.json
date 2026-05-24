@@ -1,7 +1,7 @@
 {
   "ci": {
     "collect": {
-      "staticDistDir": "./.vercel/output/static",
+      "staticDistDir": "./dist",
       "url": [
         "http://localhost/index.html",
         "http://localhost/services/index.html",

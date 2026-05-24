@@ -1,16 +1,19 @@
 import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 import sitemap from '@astrojs/sitemap';
-import vercel from '@astrojs/vercel/static';
+// No Vercel adapter — using plain Astro static build (dist/). Vercel then
+// auto-detects Astro, serves dist/, and ALSO auto-discovers serverless
+// functions under /api/*.js at the project root. The Astro Vercel adapter
+// (any variant) would commandeer the build output and silently exclude
+// our native /api/contact.js, so we don't use it.
 
 export default defineConfig({
   site: 'https://hexfield.com.au',
   trailingSlash: 'always',
-  // Static output — every page is pre-rendered. The contact form's
-  // serverless handler lives at /api/contact.js (native Vercel function,
-  // outside Astro's pipeline), so Astro itself doesn't need a runtime.
+  // Static output — every page is pre-rendered to dist/. The contact form's
+  // serverless handler lives at /api/contact.js, deployed by Vercel as a
+  // native function alongside the static site.
   output: 'static',
-  adapter: vercel(),
   compressHTML: true,
   build: {
     inlineStylesheets: 'auto',
