@@ -1,16 +1,25 @@
 ---
-import BaseLayout from '~/layouts/BaseLayout.astro';
-const title = 'Thanks — we\'ll be in touch | Hexfield';
-const description = 'Thank you for contacting Hexfield Pty Ltd. We will respond within one business day.';
+import SlidesLayout from '~/layouts/SlidesLayout.astro';
+import { SITE } from '~/config/site';
+
+const title = `Thanks — we'll be in touch | ${SITE.name}`;
+const description = `Thank you for contacting ${SITE.legalName}. I'll respond within one business day.`;
 ---
-<BaseLayout {title} {description} path="/contact/thanks/" robots="noindex,follow">
-  <section class="container-narrow section text-center max-w-2xl">
-    <h1 class="h1 mb-4">Thanks — we'll be in touch</h1>
-    <p class="text-lg prose-body mx-auto mb-8">
-      We have received your enquiry and will respond within one business day.
-      If it is urgent, please call us on
-      <a href="tel:+61280000000" class="font-semibold">+61 2 8000 0000</a>.
-    </p>
-    <a href="/" class="btn-secondary">Back to home</a>
+<SlidesLayout {title} {description} path="/contact/thanks/" slideCount={1} initialVariant="dark">
+
+  <section class="slide slide-dark" data-variant="dark">
+    <div class="slide-inner text-center" style="display: grid; place-items: center;">
+      <p class="slide-eyebrow" style="justify-self: center;">Message received</p>
+      <h1 class="h-display mb-6">Thanks — I'll<br/>be in <span class="hl-pill">touch</span></h1>
+      <p class="lead mb-10" style="margin-inline: auto;">
+        I've received your enquiry and will reply within one business day. If it's urgent,
+        give me a call on <a href={`tel:${SITE.phoneTel}`} style="color: #C8F031; font-weight: 700;">{SITE.phoneDisplay}</a>.
+      </p>
+      <div class="flex flex-wrap gap-3 justify-center">
+        <a href="/" class="btn-pill-lime">Back to home</a>
+        <a href="/portfolio/" class="btn-pill-ghost">See recent work</a>
+      </div>
+    </div>
   </section>
-</BaseLayout>
+
+</SlidesLayout>
