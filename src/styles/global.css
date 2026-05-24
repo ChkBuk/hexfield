@@ -210,6 +210,65 @@
   margin: 0 auto;
 }
 
+/* Long-form variant for text-heavy single-slide pages (privacy, terms,
+   cookies, 404). The slide itself scrolls vertically and content sits
+   at the top instead of being vertically centred. The slide-engine's
+   touch handler already supports per-slide scroll. */
+.slide-scroll {
+  overflow-y: auto !important;
+  align-content: start !important;
+}
+.slide-scroll .slide-inner {
+  max-width: 800px;
+}
+/* Article typography inside long-form slides. */
+.slide-scroll .longform h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  font-weight: 900;
+  margin-bottom: 0.5rem;
+}
+.slide-scroll .longform h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  margin-top: 2.5rem;
+  margin-bottom: 0.75rem;
+}
+.slide-scroll .longform h3 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+.slide-scroll .longform p,
+.slide-scroll .longform li {
+  font-size: 1rem;
+  line-height: 1.7;
+  margin-bottom: 1rem;
+}
+.slide-scroll .longform ul,
+.slide-scroll .longform ol {
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+.slide-scroll .longform a {
+  color: #C8F031;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.slide-scroll .longform a:hover { color: #B6DD22; }
+.slide-scroll.slide-light .longform a,
+.slide-scroll.slide-tint .longform a { color: #0F1014; }
+.slide-scroll .longform .meta {
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  opacity: 0.6;
+  margin-bottom: 2rem;
+}
+
 /* Section variants — base bg + text colour set here, headings/lead handled
    below the base typography block (with higher specificity) so they win. */
 .slide-light { background: #FFFFFF; color: #0F1014; }

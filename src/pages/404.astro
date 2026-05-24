@@ -1,5 +1,5 @@
 ---
-import BaseLayout from '~/layouts/BaseLayout.astro';
+import SlidesLayout from '~/layouts/SlidesLayout.astro';
 import SiteSearch from '~/components/SiteSearch.astro';
 
 const popular = [
@@ -15,34 +15,38 @@ const popular = [
   { label: 'Home',                 href: '/' },
 ];
 ---
-<BaseLayout
+<SlidesLayout
   title="Page not found | Hexfield"
   description="Sorry, the page you were looking for does not exist."
   path="/404/"
-  robots="noindex,follow"
+  slideCount={1}
+  initialVariant="dark"
 >
-  <section class="container-narrow section max-w-2xl">
-    <div class="text-center mb-10">
-      <p class="text-brand-700 dark:text-brand-500 font-bold text-sm uppercase tracking-wider mb-2">404</p>
-      <h1 class="h1 mb-4">We couldn't find that page</h1>
-      <p class="prose-body mx-auto">The page you were looking for does not exist or has moved. Try searching, or jump to one of our most-visited pages.</p>
-    </div>
 
-    <SiteSearch label="Search Hexfield" placeholder="Search for a service, city or article…" />
+  <section class="slide slide-dark slide-scroll" data-variant="dark">
+    <div class="slide-inner longform" style="text-align: center;">
+      <p class="slide-eyebrow" style="justify-self: center;">404</p>
+      <h1>We couldn't<br/>find that <span class="hl-pill">page</span></h1>
+      <p class="meta" style="opacity: 0.8;">The page you were looking for does not exist or has moved.<br/>Try searching, or jump to one of the most-visited pages.</p>
 
-    <h2 class="text-sm font-bold uppercase tracking-wider text-ink-500 mt-12 mb-4">Popular pages</h2>
-    <ul class="grid sm:grid-cols-2 gap-2">
-      {popular.map((p) => (
-        <li>
-          <a href={p.href} class="block px-4 py-3 rounded-lg border border-ink-200 dark:border-[#1F2937] hover:bg-ink-50 dark:hover:bg-ink-900 no-underline text-ink-900 dark:text-ink-50 font-medium">
-            {p.label} <span class="text-ink-500 font-normal">→</span>
-          </a>
-        </li>
-      ))}
-    </ul>
+      <div style="max-width: 640px; margin: 0 auto 2.5rem;">
+        <SiteSearch label="Search Hexfield" placeholder="Search for a service or article…" />
+      </div>
 
-    <div class="mt-10 text-center">
-      <a href="/" class="btn-primary">Back to home</a>
+      <p class="slide-eyebrow" style="justify-self: center;">Popular pages</p>
+      <ul class="grid gap-px md:grid-cols-2 list-none p-0 bg-graphite-900" style="border-radius: 2px; overflow: hidden; margin: 0 auto 2.5rem; max-width: 720px; text-align: left;">
+        {popular.map((p) => (
+          <li>
+            <a href={p.href} class="dark-card no-underline" style="border-radius: 0; min-height: 0; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between;">
+              <span style="color: #FFFFFF; font-weight: 700;">{p.label}</span>
+              <span style="color: #C8F031; font-weight: 700;">→</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+
+      <a href="/" class="btn-pill-lime" style="align-self: center;">Back to home</a>
     </div>
   </section>
-</BaseLayout>
+
+</SlidesLayout>

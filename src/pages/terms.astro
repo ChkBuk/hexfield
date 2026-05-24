@@ -1,52 +1,55 @@
 ---
-import BaseLayout from '~/layouts/BaseLayout.astro';
-import Breadcrumbs from '~/components/Breadcrumbs.astro';
+import SlidesLayout from '~/layouts/SlidesLayout.astro';
 import { SITE } from '~/config/site';
 import { breadcrumbSchema } from '~/lib/schema';
 
 const title = `Terms of Use | ${SITE.legalName}`;
 const description = `Terms governing your use of the ${SITE.legalName} website and services.`;
-const lastUpdated = '2026-05-24';
+const lastUpdated = '24 May 2026';
 const crumbs = [
   { name: 'Home', path: '/' },
   { name: 'Terms', path: '/terms/' },
 ];
 ---
-<BaseLayout {title} {description} path="/terms/" schemas={[breadcrumbSchema(crumbs)]}>
-  <Breadcrumbs items={crumbs} />
-  <article class="container-narrow section max-w-3xl prose-body">
-    <h1 class="h1 mb-2 text-ink-900 dark:text-ink-50">Terms of Use</h1>
-    <p class="text-sm text-ink-500 mb-8">Last updated: {lastUpdated}</p>
+<SlidesLayout {title} {description} path="/terms/" schemas={[breadcrumbSchema(crumbs)]} slideCount={1} initialVariant="dark">
 
-    <h2 class="h2 mt-10 mb-3 text-ink-900 dark:text-ink-50">1. Acceptance of terms</h2>
-    <p>By accessing or using the {SITE.legalName} website (ABN {SITE.abn}) you agree to be bound by these
-      terms. If you do not agree, please do not use this website.</p>
+  <section class="slide slide-dark slide-scroll" data-variant="dark">
+    <div class="slide-inner longform">
+      <p class="slide-eyebrow">Legal</p>
+      <h1>Terms of Use</h1>
+      <p class="meta">Last updated: {lastUpdated}</p>
 
-    <h2 class="h2 mt-10 mb-3 text-ink-900 dark:text-ink-50">2. Use of the site</h2>
-    <p>You agree to use this website only for lawful purposes and in a way that does not infringe the rights
-      of, restrict or inhibit anyone else's use of the site.</p>
+      <h2>1. Acceptance of terms</h2>
+      <p>By accessing or using the {SITE.legalName} website (ABN {SITE.abn}) you agree to be bound by these
+        terms. If you do not agree, please do not use this website.</p>
 
-    <h2 class="h2 mt-10 mb-3 text-ink-900 dark:text-ink-50">3. Intellectual property</h2>
-    <p>All content, branding, logos, code samples and written material on this website are the intellectual
-      property of {SITE.legalName} unless otherwise stated. You may not reproduce, redistribute or republish
-      the material without prior written permission.</p>
+      <h2>2. Use of the site</h2>
+      <p>You agree to use this website only for lawful purposes and in a way that does not infringe the rights
+        of, restrict or inhibit anyone else's use of the site.</p>
 
-    <h2 class="h2 mt-10 mb-3 text-ink-900 dark:text-ink-50">4. No warranties</h2>
-    <p>The website is provided on an "as is" basis. {SITE.legalName} makes no warranties, expressed or
-      implied, regarding the accuracy, reliability or completeness of the information presented.</p>
+      <h2>3. Intellectual property</h2>
+      <p>All content, branding, logos, code samples and written material on this website are the intellectual
+        property of {SITE.legalName} unless otherwise stated. You may not reproduce, redistribute or republish
+        the material without prior written permission.</p>
 
-    <h2 class="h2 mt-10 mb-3 text-ink-900 dark:text-ink-50">5. Engagement terms</h2>
-    <p>Service engagements (forms digitalisation, web design, web development, system design, SEO) are
-      governed by a separate written agreement signed before commencement of work. Nothing on this website
-      constitutes an offer to enter into such an agreement.</p>
+      <h2>4. No warranties</h2>
+      <p>The website is provided on an "as is" basis. {SITE.legalName} makes no warranties, expressed or
+        implied, regarding the accuracy, reliability or completeness of the information presented.</p>
 
-    <h2 class="h2 mt-10 mb-3 text-ink-900 dark:text-ink-50">6. Governing law</h2>
-    <p>These terms are governed by the laws of South Australia and the Commonwealth of Australia. Any
-      dispute will be subject to the exclusive jurisdiction of the courts of South Australia.</p>
+      <h2>5. Engagement terms</h2>
+      <p>Service engagements (forms digitalisation, web design, web development, system design, SEO) are
+        governed by a separate written agreement signed before commencement of work. Nothing on this website
+        constitutes an offer to enter into such an agreement.</p>
 
-    <h2 class="h2 mt-10 mb-3 text-ink-900 dark:text-ink-50">7. Contact</h2>
-    <p>Questions about these terms? Email
-      <a href={`mailto:${SITE.email}`}>{SITE.email}</a> or write to {SITE.legalName},
-      {SITE.address.street}, {SITE.address.locality} {SITE.address.region} {SITE.address.postalCode}.</p>
-  </article>
-</BaseLayout>
+      <h2>6. Governing law</h2>
+      <p>These terms are governed by the laws of South Australia and the Commonwealth of Australia. Any
+        dispute will be subject to the exclusive jurisdiction of the courts of South Australia.</p>
+
+      <h2>7. Contact</h2>
+      <p>Questions about these terms? Email
+        <a href={`mailto:${SITE.email}`}>{SITE.email}</a> or write to {SITE.legalName},
+        {SITE.address.street}, {SITE.address.locality} {SITE.address.region} {SITE.address.postalCode}.</p>
+    </div>
+  </section>
+
+</SlidesLayout>

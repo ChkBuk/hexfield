@@ -62,17 +62,24 @@ export class SlideEngine {
     });
   }
 
-  /** Resolve initial slide from URL hash (#slide-N), default to 0.
-   *  Out-of-range hashes (e.g. #slide-99 on a 3-slide deck, or a stale
-   *  #slide-4 from a previous deploy) clamp to the last valid slide and
-   *  the URL is rewritten in `commit()` so the user never lingers on an
-   *  invalid hash. */
-  private applyInitial(): void {
-    const m = /^#slide-(\d+)$/.exec(window.location.hash);
-    if (m) {
-      const idx = parseInt(m[1], 10) - 1;
-      this.currentIndex = Math.max(0, Math.min(this.slides.length - 1, idx));
+  /** Resolve a hash like `#slide-N` or `#some-id` to a valid slide index.
+   *  Returns null if the hash isn't a slide reference at all. */
+  private hashToIndex(hash: string): number | null {
+    const n = /^#slide-(\d+)$/.exec(hash);
+    if (n) {
+      const idx = parseInt(n[1], 10) - 1;
+      return Math.max(0, Math.min(this.slides.length - 1, idx));
     }
+    const id = hash.replace(/^#/, '');
+    if (!id) return null;
+    const target = this.slides.findIndex((s) => s.id === id);
+    return target >= 0 ? target : null;
+  }
+
+  /** Resolve initial slide from URL hash, default to 0. */
+  private applyInitial(): void {
+    const idx = this.hashToIndex(window.location.hash);
+    if (idx !== null) this.currentIndex = idx;
     this.commit(false);
   }
 
@@ -204,13 +211,8 @@ export class SlideEngine {
   private onResize = (): void => { this.commit(false); };
 
   private onHashChange = (): void => {
-    const m = /^#slide-(\d+)$/.exec(window.location.hash);
-    if (m) {
-      const idx = parseInt(m[1], 10) - 1;
-      // Clamp so a typed/bookmarked out-of-range hash still lands somewhere
-      // valid instead of leaving the URL pointing at a non-existent slide.
-      this.goto(Math.max(0, Math.min(this.slides.length - 1, idx)));
-    }
+    const idx = this.hashToIndex(window.location.hash);
+    if (idx !== null) this.goto(idx);
   };
 
   private isInputFocused(): boolean {
