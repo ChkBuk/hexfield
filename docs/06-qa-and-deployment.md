@@ -155,6 +155,22 @@ npx lighthouse http://localhost:8080 --quiet --chrome-flags="--headless" --outpu
 
 ---
 
+## 7.5 Contact form — Resend setup (Vercel)
+
+The contact form posts to `/api/contact`, a serverless function that sends mail via [Resend](https://resend.com).
+
+**Required environment variables on Vercel** (Project Settings → Environment Variables, apply to all environments):
+
+| Name | Required? | Example | Notes |
+|---|---|---|---|
+| `RESEND_API_KEY` | **Yes** | `re_AbCd1234...` | Get one at https://resend.com/api-keys |
+| `CONTACT_TO_EMAIL` | No | `info@hexfield.com.au` | Defaults to `info@hexfield.com.au` |
+| `RESEND_FROM_EMAIL` | No | `noreply@hexfield.com.au` | Defaults to `onboarding@resend.dev` (Resend's pre-verified sender). To use a `@hexfield.com.au` address, verify the domain on Resend (Domains → Add → enter DNS records on your registrar) |
+
+After updating env vars on Vercel, trigger a redeploy (push or click **Redeploy** on the last deployment).
+
+Local dev: copy `.env.example` to `.env` and fill in `RESEND_API_KEY` to test locally with `npm run dev`.
+
 ## 8. Deployment runbook (Netlify)
 
 ### 8.1 Prerequisites

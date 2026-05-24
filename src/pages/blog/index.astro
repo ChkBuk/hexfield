@@ -51,7 +51,7 @@ const slideCount = posts.length > 0 ? 3 : 2;
             <p class="lead">Short reads on the practical side of building business systems.</p>
           </div>
         </div>
-        <ul class="grid gap-px md:grid-cols-3 list-none p-0 bg-graphite-900" style="border-radius: 18px; overflow: hidden;">
+        <ul class="grid gap-px md:grid-cols-3 list-none p-0 bg-graphite-900" style="border-radius: 2px; overflow: hidden;">
           {posts.slice(0, 6).map((post) => (
             <li><a href={`/blog/${post.slug}/`} class="dark-card no-underline" style="border-radius: 0; min-height: 240px;">
               <p style="color: rgba(255,255,255,0.4); font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;">

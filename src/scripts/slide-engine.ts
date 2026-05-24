@@ -260,6 +260,21 @@ export class SlideEngine {
     document.body.classList.toggle('slide-dark-active', variant === 'dark');
     document.body.classList.toggle('slide-tint-active', variant === 'tint');
 
+    // Dynamically update <meta name="theme-color"> so the iOS/Chrome mobile
+    // status bar matches the active slide colour. This also affects the
+    // pull-to-refresh overlay colour on Chrome Android.
+    const themeColor =
+      variant === 'dark' ? '#0F1014' :
+      variant === 'tint' ? '#C8F031' :
+      '#FFFFFF';
+    let metaTheme = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+    if (!metaTheme) {
+      metaTheme = document.createElement('meta');
+      metaTheme.name = 'theme-color';
+      document.head.appendChild(metaTheme);
+    }
+    metaTheme.content = themeColor;
+
     // Notify subscribers (analytics, future hero motion, …) that the active
     // slide changed. Listeners receive { index, total, variant, animate }.
     window.dispatchEvent(new CustomEvent('hexfield:slidechange', {

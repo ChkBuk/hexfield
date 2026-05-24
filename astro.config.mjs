@@ -1,11 +1,16 @@
 import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 import sitemap from '@astrojs/sitemap';
+import vercel from '@astrojs/vercel/serverless';
 
 export default defineConfig({
   site: 'https://hexfield.com.au',
   trailingSlash: 'always',
-  output: 'static',
+  // Hybrid: every page is static by default; only routes that opt-in via
+  // `export const prerender = false` (currently just /api/contact) ship as
+  // a Vercel serverless function.
+  output: 'hybrid',
+  adapter: vercel(),
   compressHTML: true,
   build: {
     inlineStylesheets: 'auto',

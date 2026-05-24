@@ -46,13 +46,11 @@ const slideCount = 3;
       <form
         name="contact"
         method="POST"
-        action="/contact/thanks/"
+        action="/api/contact"
         enctype="multipart/form-data"
-        data-netlify="true"
-        netlify-honeypot="company-website"
         class="hexform lime-card lg:col-span-7"
       >
-        <input type="hidden" name="form-name" value="contact" />
+        <div class="hexform__error" data-form-error hidden role="alert"></div>
         <p class="hexform__hp" aria-hidden="true">
           <label>Do not fill: <input name="company-website" tabindex="-1" autocomplete="off" /></label>
         </p>
@@ -110,6 +108,31 @@ const slideCount = 3;
     </div>
   </section>
 
+  <!-- Tiny inline script: reads ?error= from the URL after a failed submit
+       and reveals an inline error banner above the form. No-JS users still
+       see the validation message from the server console / network tab. -->
+  <script is:inline>
+    (() => {
+      const params = new URLSearchParams(window.location.search);
+      const err = params.get('error');
+      if (!err) return;
+      const banner = document.querySelector('[data-form-error]');
+      if (!banner) return;
+      const MESSAGES = {
+        'missing':        'Please fill in all required fields (marked *).',
+        'invalid-email':  'That email address doesn\'t look right. Please check and try again.',
+        'too-long':       'One of the fields is too long. Please shorten and try again.',
+        'file-too-large': 'Attachment is over 10 MB. Please attach a smaller file (or send it via a link).',
+        'bad-request':    'Something went wrong reading the form. Please try again.',
+        'send-failed':    'I couldn\'t send the message right now. Please try again in a moment, or email info@hexfield.com.au directly.',
+        'server':         'The contact form is temporarily unavailable. Please email info@hexfield.com.au directly.',
+      };
+      banner.textContent = MESSAGES[err] || 'Something went wrong. Please try again or email info@hexfield.com.au.';
+      banner.hidden = false;
+      banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    })();
+  </script>
+
   <!-- ─── Slide 3: Direct details (LIGHT) ──────────────────────────── -->
   <section class="slide slide-light" data-variant="light">
     <div class="slide-inner">
@@ -122,7 +145,7 @@ const slideCount = 3;
           <p class="lead">Prefer email, phone or a quick DM on LinkedIn? Pick whatever works — they all reach me directly.</p>
         </div>
       </div>
-      <div class="grid gap-px md:grid-cols-2 list-none p-0 bg-graphite-900" style="border-radius: 18px; overflow: hidden;">
+      <div class="grid gap-px md:grid-cols-2 list-none p-0 bg-graphite-900" style="border-radius: 2px; overflow: hidden;">
         <div class="dark-card" style="border-radius: 0; text-align: left;">
           <p style="color: rgba(255,255,255,0.4); font-size: 12px; font-weight: 700; letter-spacing: 0.1em;">EMAIL</p>
           <a href={`mailto:${SITE.email}`} style="color: #C8F031; font-size: 1.5rem; font-weight: 700; letter-spacing: -0.01em; align-self: flex-start;">{SITE.email}</a>
