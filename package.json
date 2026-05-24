@@ -4,12 +4,15 @@
   "version": "1.0.0",
   "private": true,
   "description": "Hexfield Pty Ltd — Australian IT services marketing site (Astro + Tailwind).",
+  "engines": {
+    "node": "20.x"
+  },
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
     "prebuild": "node scripts/build-og-image.mjs",
     "build": "astro build",
-    "postbuild": "pagefind --site .vercel/output/static --output-subdir pagefind && node scripts/check-internal-links.mjs .vercel/output/static",
+    "postbuild": "pagefind --site .vercel/output/static --output-subdir pagefind && node scripts/check-internal-links.mjs .vercel/output/static && node scripts/patch-vercel-runtime.mjs",
     "preview": "astro preview --host",
     "typecheck": "astro check",
     "astro": "astro"
