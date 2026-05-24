@@ -14,10 +14,12 @@ import { Resend } from 'resend';
 // Tell Astro this route must be a serverless function, not pre-rendered.
 export const prerender = false;
 
-const RESEND_API_KEY    = import.meta.env.RESEND_API_KEY;
-const TO_EMAIL          = import.meta.env.CONTACT_TO_EMAIL   ?? 'info@hexfield.com.au';
-const FROM_EMAIL        = import.meta.env.RESEND_FROM_EMAIL  ?? 'onboarding@resend.dev';
-const FROM_NAME         = 'Hexfield Website';
+// Read at runtime via process.env — NOT import.meta.env. Vite statically
+// replaces import.meta.env.* at build time, so any env var that's absent
+// during the build gets inlined as `undefined` and the dead-code eliminator
+// will then strip every branch that depends on it (e.g. the whole Resend
+// send path). process.env is read at request time, on the Vercel function.
+const FROM_NAME = 'Hexfield Website';
 
 const MAX_FILE_BYTES = 10 * 1024 * 1024; // 10 MB
 
@@ -41,6 +43,10 @@ function escapeHtml(s: string): string {
 }
 
 export const POST: APIRoute = async ({ request }) => {
+  const RESEND_API_KEY = process.env.RESEND_API_KEY;
+  const TO_EMAIL       = process.env.CONTACT_TO_EMAIL   ?? 'info@hexfield.com.au';
+  const FROM_EMAIL     = process.env.RESEND_FROM_EMAIL  ?? 'onboarding@resend.dev';
+
   // Resend key not configured (e.g. running locally without env vars). Fail
   // gracefully — redirect back with a server-config error instead of 500'ing.
   if (!RESEND_API_KEY) {
