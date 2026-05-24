@@ -15,7 +15,9 @@
 import { Resend } from 'resend';
 import { Buffer } from 'node:buffer';
 
-export const config = { runtime: 'nodejs20.x' };
+// Vercel native functions take 'nodejs' here; the actual Node major
+// comes from engines.node in package.json (set to 20.x).
+export const config = { runtime: 'nodejs' };
 
 const FROM_NAME = 'Hexfield Website';
 const MAX_FILE_BYTES = 10 * 1024 * 1024;
