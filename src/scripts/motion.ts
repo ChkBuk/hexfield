@@ -76,8 +76,34 @@ function initSlideReveal(): void {
 }
 
 // ── Scroll-reveal for static pages ─────────────────────────────────
+// Auto-tag the major content blocks (headings, paragraphs, lists, tables)
+// inside <main> on static pages. We do this in JS so authors don't have
+// to remember to add data-reveal everywhere. Elements already marked
+// data-reveal in markup are preserved (an opt-in escape hatch).
+const AUTO_REVEAL_SELECTOR =
+  'main h1, main h2, main h3, main p, main ul, main ol, main blockquote, ' +
+  'main table, main figure, main pre, main .card, main section > *';
+
 function initScrollReveal(): void {
-  const els = document.querySelectorAll<HTMLElement>('[data-reveal]');
+  const candidates = document.querySelectorAll<HTMLElement>(AUTO_REVEAL_SELECTOR);
+  const vh = window.innerHeight;
+
+  candidates.forEach((el) => {
+    if (el.closest('.slide')) return;            // slide-deck uses its own reveal
+    if (el.hasAttribute('data-reveal')) return;  // already opted-in
+
+    // Tag + classify atomically so we don't flash visible-then-hidden.
+    // Anything already in the viewport (above the fold) goes straight to
+    // .is-visible; everything below the fold starts hidden and the
+    // observer will reveal it on scroll.
+    const rect = el.getBoundingClientRect();
+    const inViewport = rect.top < vh && rect.bottom > 0;
+    el.setAttribute('data-reveal', '');
+    if (inViewport) el.classList.add('is-visible');
+  });
+
+  // Manually tagged + still-hidden elements both need observing.
+  const els = document.querySelectorAll<HTMLElement>('[data-reveal]:not(.is-visible)');
   if (els.length === 0) return;
   if (reducedMotion) {
     els.forEach((el) => el.classList.add('is-visible'));

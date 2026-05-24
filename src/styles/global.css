@@ -1359,14 +1359,17 @@ body:has(#mobile-menu-toggle:checked) { overflow: hidden; }
 
 /* 3b) Scroll-reveal — for static pages (BaseLayout) and any element
    marked with [data-reveal]. Inactive state matches the slide reveal so
-   the visual language is consistent across the site. */
-[data-reveal] {
+   the visual language is consistent across the site.
+   The `html.js` guard means no-JS users still see content immediately;
+   the inline script in BaseLayout.astro swaps `no-js` → `js` before
+   first paint when JS is available. */
+html.js [data-reveal] {
   opacity: 0;
   transform: translateY(16px);
   transition: opacity 600ms cubic-bezier(0.2, 0.8, 0.2, 1),
               transform 600ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-[data-reveal].is-visible {
+html.js [data-reveal].is-visible {
   opacity: 1;
   transform: translateY(0);
 }

@@ -29,9 +29,13 @@ const {
 const indexable = !robots || !robots.includes('noindex');
 ---
 <!doctype html>
-<html lang={SITE.hreflang}>
+<html lang={SITE.hreflang} class="no-js">
   <head>
     <meta charset="UTF-8" />
+    <!-- Replace `no-js` with `js` before paint so the scroll-reveal CSS
+         only hides content for JS-enabled users. No-JS users still see
+         everything immediately, just without the fade-in animation. -->
+    <script is:inline>document.documentElement.classList.replace('no-js','js')</script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content={SITE.themeColor} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
