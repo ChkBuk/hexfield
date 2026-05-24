@@ -2,6 +2,7 @@ import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 import sitemap from '@astrojs/sitemap';
 import vercel from '@astrojs/vercel/serverless';
+import vercelFix from './scripts/vercel-fix-integration.mjs';
 
 export default defineConfig({
   site: 'https://hexfield.com.au',
@@ -26,6 +27,7 @@ export default defineConfig({
     },
   },
   integrations: [
+    vercelFix(),
     tailwind({ applyBaseStyles: false }),
     sitemap({
       changefreq: 'weekly',

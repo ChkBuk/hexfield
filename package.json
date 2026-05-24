@@ -13,6 +13,7 @@
     "prebuild": "node scripts/build-og-image.mjs",
     "build": "astro build",
     "postbuild": "pagefind --site .vercel/output/static --output-subdir pagefind && node scripts/check-internal-links.mjs .vercel/output/static && node scripts/patch-vercel-runtime.mjs",
+    "vercel-build": "npm run build",
     "preview": "astro preview --host",
     "typecheck": "astro check",
     "astro": "astro"
