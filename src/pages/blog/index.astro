@@ -19,7 +19,7 @@ const crumbs = [
 const fmt = new Intl.DateTimeFormat('en-AU', { day: 'numeric', month: 'long', year: 'numeric' });
 const slideCount = posts.length > 0 ? 3 : 2;
 ---
-<SlidesLayout {title} {description} path="/blog/" schemas={[breadcrumbSchema(crumbs)]} {slideCount}>
+<SlidesLayout {title} {description} path="/blog/" schemas={[breadcrumbSchema(crumbs)]} {slideCount} initialVariant="dark">
 
   <!-- ─── Slide 1: Hero + search (DARK) ───────────────────────────── -->
   <section class="slide slide-dark" data-variant="dark">

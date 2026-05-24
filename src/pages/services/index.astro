@@ -77,7 +77,7 @@ const crumbs = [
 // One slide per service + hero + CTA.
 const slideCount = 1 + services.length + 1;
 ---
-<SlidesLayout {title} {description} path="/services/" schemas={[breadcrumbSchema(crumbs)]} {slideCount}>
+<SlidesLayout {title} {description} path="/services/" schemas={[breadcrumbSchema(crumbs)]} {slideCount} initialVariant="dark">
 
   <!-- ─── Slide 1: Hero (DARK) ─────────────────────────────────────── -->
   <section class="slide slide-dark" data-variant="dark">

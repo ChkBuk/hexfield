@@ -17,16 +17,33 @@ export interface Props {
   schemas?: Array<Record<string, unknown>>;
   /** Number of slides — used for the static initial counter render. */
   slideCount: number;
+  /** Variant of slide 1. Determines the body class and theme-color applied
+   *  at render time, so the header/footer chrome (and the active nav dot)
+   *  render in the right colour BEFORE the slide engine runs. Without this,
+   *  the active dot uses the light-mode graphite colour and is invisible
+   *  against a dark hero slide. */
+  initialVariant?: 'light' | 'dark' | 'tint';
 }
 
-const { title, description, path, image, schemas = [], slideCount } = Astro.props;
+const { title, description, path, image, schemas = [], slideCount, initialVariant = 'light' } = Astro.props;
+
+const bodyClass = [
+  'slides-body bg-canvas text-graphite-900 antialiased',
+  initialVariant === 'dark' && 'slide-dark-active',
+  initialVariant === 'tint' && 'slide-tint-active',
+].filter(Boolean).join(' ');
+
+const initialThemeColor =
+  initialVariant === 'dark' ? '#0F1014' :
+  initialVariant === 'tint' ? '#C8F031' :
+  SITE.themeColor;
 ---
 <!doctype html>
 <html lang={SITE.hreflang}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content={SITE.themeColor} />
+    <meta name="theme-color" content={initialThemeColor} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="manifest" href="/site.webmanifest" />
     <link rel="alternate" type="application/rss+xml" title={`${SITE.name} — Blog RSS`} href="/rss.xml" />
@@ -37,7 +54,7 @@ const { title, description, path, image, schemas = [], slideCount } = Astro.prop
     <JsonLd data={websiteSchema} />
     {schemas.map((s) => <JsonLd data={s} />)}
   </head>
-  <body class="slides-body bg-canvas text-graphite-900 antialiased">
+  <body class={bodyClass}>
     <a href="#main" class="sr-only focus:not-sr-only fixed top-2 left-2 z-50 bg-mute text-white rounded">
       Skip to main content
     </a>

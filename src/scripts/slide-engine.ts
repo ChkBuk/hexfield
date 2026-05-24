@@ -38,8 +38,12 @@ export class SlideEngine {
   constructor(viewport: HTMLElement, container: HTMLElement, opts: Partial<Options> = {}) {
     this.viewport = viewport;
     this.container = container;
+    // Only count elements that are actual slides — `.slide` sections. Pages
+    // are free to nest inline <script> blocks (e.g. the contact page's
+    // ?error= banner script) inside the layout slot, and those would
+    // otherwise be picked up as phantom slides and produce a blank one.
     this.slides = Array.from(container.children).filter(
-      (n): n is HTMLElement => n instanceof HTMLElement,
+      (n): n is HTMLElement => n instanceof HTMLElement && n.classList.contains('slide'),
     );
     this.opts = { ...DEFAULTS, ...opts };
     this.reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -58,12 +62,16 @@ export class SlideEngine {
     });
   }
 
-  /** Resolve initial slide from URL hash (#slide-N), default to 0. */
+  /** Resolve initial slide from URL hash (#slide-N), default to 0.
+   *  Out-of-range hashes (e.g. #slide-99 on a 3-slide deck, or a stale
+   *  #slide-4 from a previous deploy) clamp to the last valid slide and
+   *  the URL is rewritten in `commit()` so the user never lingers on an
+   *  invalid hash. */
   private applyInitial(): void {
     const m = /^#slide-(\d+)$/.exec(window.location.hash);
     if (m) {
       const idx = parseInt(m[1], 10) - 1;
-      if (idx >= 0 && idx < this.slides.length) this.currentIndex = idx;
+      this.currentIndex = Math.max(0, Math.min(this.slides.length - 1, idx));
     }
     this.commit(false);
   }
@@ -186,7 +194,9 @@ export class SlideEngine {
     const m = /^#slide-(\d+)$/.exec(window.location.hash);
     if (m) {
       const idx = parseInt(m[1], 10) - 1;
-      if (idx >= 0 && idx < this.slides.length) this.goto(idx);
+      // Clamp so a typed/bookmarked out-of-range hash still lands somewhere
+      // valid instead of leaving the URL pointing at a non-existent slide.
+      this.goto(Math.max(0, Math.min(this.slides.length - 1, idx)));
     }
   };
 
@@ -228,9 +238,14 @@ export class SlideEngine {
       }
     });
 
-    // Sync nav dots / prev-next disabled state.
-    document.querySelectorAll<HTMLElement>('[data-slide-goto]').forEach((el, i) => {
-      el.setAttribute('aria-current', i === this.currentIndex ? 'true' : 'false');
+    // Sync nav dots / prev-next disabled state. Read the target index from
+    // each element's data-slide-goto attribute — NOT the iteration index —
+    // because `[data-slide-goto]` also matches in-page CTAs (e.g. the
+    // "Send a message" button on /contact/ uses data-slide-goto="1"), which
+    // would otherwise shift every dot's aria-current by one.
+    document.querySelectorAll<HTMLElement>('[data-slide-goto]').forEach((el) => {
+      const target = parseInt(el.dataset.slideGoto!, 10);
+      el.setAttribute('aria-current', target === this.currentIndex ? 'true' : 'false');
     });
     document.querySelectorAll<HTMLButtonElement>('[data-slide-prev]').forEach((el) => {
       el.toggleAttribute('disabled', this.currentIndex === 0);
