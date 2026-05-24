@@ -61,8 +61,30 @@ window.addEventListener('hexfield:slidechange', (e: Event) => {
   const detail = (e as CustomEvent<{ index: number }>).detail;
   if (detail && typeof detail.index === 'number') {
     markActiveSlide(detail.index);
+    // Hide the scroll hint once the user has actually advanced past slide 1.
+    // (We also hide on any scroll inside a slide — handled below.)
+    const hint = document.querySelector<HTMLElement>('[data-scroll-hint]');
+    if (hint) hint.classList.toggle('is-hidden', detail.index > 0);
   }
 });
+
+// Hide the scroll hint as soon as the user starts scrolling inside slide 1.
+// This catches the case where the user has scrolled but hasn't yet advanced.
+function bindScrollHintAutoHide(): void {
+  const hint = document.querySelector<HTMLElement>('[data-scroll-hint]');
+  if (!hint) return;
+  const slides = document.querySelectorAll<HTMLElement>('.slide');
+  slides.forEach((slide) => {
+    slide.addEventListener('scroll', () => {
+      if (slide.scrollTop > 40) hint.classList.add('is-hidden');
+    }, { passive: true });
+  });
+  // Clicking the hint scrolls the active slide down by one viewport.
+  hint.addEventListener('click', () => {
+    const active = document.querySelector<HTMLElement>('.slide.is-active') ?? slides[0];
+    if (active) active.scrollBy({ top: active.clientHeight * 0.8, behavior: 'smooth' });
+  });
+}
 
 // Initial: when the page loads, the first slide should reveal too.
 // We wait one frame so the slide engine has dispatched its initial
@@ -128,6 +150,7 @@ function initScrollReveal(): void {
 document.addEventListener('astro:page-load', () => {
   initSlideReveal();
   initScrollReveal();
+  bindScrollHintAutoHide();
 });
 
 // Also handle the very first load before astro:page-load has wired up.
@@ -135,8 +158,10 @@ if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
     initSlideReveal();
     initScrollReveal();
+    bindScrollHintAutoHide();
   });
 } else {
   initSlideReveal();
   initScrollReveal();
+  bindScrollHintAutoHide();
 }

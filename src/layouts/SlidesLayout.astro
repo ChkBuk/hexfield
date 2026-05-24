@@ -110,37 +110,34 @@ const initialThemeColor =
       </div>
     </main>
 
-    <!-- Bottom slide nav -->
-    <footer class="slides-footer" aria-label="Slide navigation">
-      <span class="slides-counter" data-slide-counter aria-live="polite" aria-atomic="true">
-        01 / {String(slideCount).padStart(2, '0')}
+    <!-- Vertical slide nav: fixed to right edge, just dots — no counter or
+         arrows. Each dot is the same goto button as before, so the slide
+         engine wires them up the same way. Hidden when there's only one
+         slide (legal pages, blog post, 404). -->
+    {slideCount > 1 && (
+      <nav class="slides-rail" aria-label="Slide navigation">
+        <ol class="slides-dots" aria-label="Jump to slide">
+          {Array.from({ length: slideCount }, (_, i) => (
+            <li>
+              <button type="button"
+                      class="slides-dot"
+                      data-slide-goto={i}
+                      aria-current={i === 0 ? 'true' : 'false'}
+                      aria-label={`Go to slide ${i + 1}`}></button>
+            </li>
+          ))}
+        </ol>
+      </nav>
+    )}
+
+    <!-- Scroll hint: mouse + animated wheel dot. Sits at the bottom-centre
+         of slide 1 and fades out the moment the user advances past it. -->
+    <button type="button" class="scroll-hint" data-scroll-hint aria-label="Scroll down">
+      <span class="scroll-hint__mouse">
+        <span class="scroll-hint__wheel"></span>
       </span>
-
-      <ol class="slides-dots" aria-label="Jump to slide">
-        {Array.from({ length: slideCount }, (_, i) => (
-          <li>
-            <button type="button"
-                    class="slides-dot"
-                    data-slide-goto={i}
-                    aria-current={i === 0 ? 'true' : 'false'}
-                    aria-label={`Go to slide ${i + 1}`}></button>
-          </li>
-        ))}
-      </ol>
-
-      <div class="slides-arrows">
-        <button type="button" class="slides-arrow" data-slide-prev aria-label="Previous slide" disabled>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
-            <path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-        <button type="button" class="slides-arrow" data-slide-next aria-label="Next slide">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
-            <path d="M9 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-      </div>
-    </footer>
+      <span class="scroll-hint__label">Scroll</span>
+    </button>
 
     <!-- Mobile menu panel — lives at body level (sibling of header) so its
          position: fixed honours the viewport instead of being trapped inside

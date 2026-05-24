@@ -193,16 +193,27 @@
   height: 100dvh;
   height: 100vh;
   display: grid;
-  align-content: center;
-  /* Top: clear the 88-px header + iOS notch. Bottom: clear the 72-px footer
-     + iOS home-indicator. Side padding stays responsive. */
+  /* `safe center` keeps tall content from being cut off when it doesn't
+     fit — the centred layout falls back to start-aligned and the slide
+     scrolls vertically instead. */
+  align-content: safe center;
+  /* Top: clear the header + iOS notch. Bottom: clear the iOS home-indicator
+     and leave a touch of breathing room. Right padding makes room for the
+     vertical dots rail (40-px column). Side padding stays responsive. */
   padding-top:    calc(112px + env(safe-area-inset-top));
-  padding-bottom: calc(112px + env(safe-area-inset-bottom));
+  padding-bottom: calc(56px + env(safe-area-inset-bottom));
   padding-left:   clamp(20px, 6vw, 80px);
-  padding-right:  clamp(20px, 6vw, 80px);
-  overflow: hidden;
+  padding-right:  clamp(56px, 6vw, 96px);
+  /* Allow vertical scrolling within a slide when content overflows. The
+     slide-engine watches scrollTop and only advances to the next/prev slide
+     once the user pushes past the top or bottom edge. */
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   position: relative;
+  scrollbar-width: none;
 }
+.slide::-webkit-scrollbar { display: none; }
 
 .slide-inner {
   width: 100%;
@@ -326,10 +337,15 @@
    Note: hyphens disabled — auto-hyphenation produces ugly breaks like
    MAS-TERY. Words may overflow on extreme viewports; that's preferable
    to mid-word breaks. */
+/* Display headings: mixed case + softer tracking. The previous uppercase
+   + negative tracking + black weight stack was "shouted" — uppercase
+   needs positive tracking to breathe, and -0.025em at 5.5rem caps made
+   letters collide. Mixed case scans faster and matches the conversational
+   tone of the copy. */
 .slide h1.h-display, .slide h2.h-display {
-  text-transform: uppercase;
-  letter-spacing: -0.025em;
-  line-height: 1.05;
+  text-transform: none;
+  letter-spacing: -0.01em;
+  line-height: 1.02;
   font-weight: 800;
   overflow-wrap: normal;
   word-break: normal;
@@ -375,6 +391,191 @@
 }
 
 /* ── Marquee / ticker band ────────────────────────────────────── */
+/* Hero art (homepage slide 1) — a honeycomb grid of hexagons that emboss
+   in and out at randomised offsets. Pure CSS 3D + per-cell --delay/--depth
+   CSS variables (set in the Astro frontmatter) for organic motion.
+   Architecture:
+     .hero-art-wrap : flex centre, full column width
+     .hex-stage     : sets perspective for the 3D scene + receives the mouse
+     .hex-field     : the grid container (transform-style: preserve-3d)
+     .hex-cell      : a single hexagon — animated translateZ in + out
+   Hex geometry: pointy-top, side = 30 px, so cell W ≈ 52 px, H = 60 px.
+   Honeycomb tiling: row N is offset half a cell-W right on odd rows;
+   row vertical spacing is 75 % of cell height (overlap of 25 %).
+*/
+.hero-art-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+/* ── Homepage hero (centred-with-orbs design) ───────────────────────
+   Layout: centred text cluster (eyebrow → headline → lead → CTA), with
+   floating blurred lime "spotlight" orbs and subtle topographic wave
+   lines layered behind. */
+.hero-center {
+  position: relative;
+  z-index: 3;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 920px;
+  margin: 0 auto;
+  isolation: isolate; /* so ::before stays scoped to this stacking context */
+}
+/* Soft dark "spotlight" behind the text cluster — improves contrast
+   over busy hero background images without obscuring the orbs around
+   the edges. Sits at z-index -1 inside .hero-center's stacking context. */
+.hero-center::before {
+  content: '';
+  position: absolute;
+  /* Extend well beyond text bounds so the falloff blends invisibly. */
+  inset: -14% -22%;
+  z-index: -1;
+  background: radial-gradient(ellipse at center,
+    rgba(0, 0, 0, 0.92) 0%,
+    rgba(0, 0, 0, 0.78) 25%,
+    rgba(0, 0, 0, 0.50) 50%,
+    rgba(0, 0, 0, 0)    78%);
+  filter: blur(14px);
+  pointer-events: none;
+}
+.hero-center .slide-eyebrow { justify-self: center; }
+.hero-center__h1 {
+  margin-top: 28px;
+}
+.hero-center__lead {
+  max-width: 56ch;
+  margin: 28px auto 0;
+}
+.hero-center__cta {
+  margin-top: 36px;
+  align-self: center;
+}
+
+/* Lime spotlight glows — each has a different abstract shape:
+     orb-1 : organic pebble blob, slightly tilted
+     orb-2 : elongated diagonal streak (taller / narrower)
+     orb-3 : multi-lobed amoeba, largest of the three
+   Heavy blur softens the shapes into glows while still keeping their
+   distinct silhouettes visible. Each animates with its own slow float. */
+.hero-orb {
+  position: absolute;
+  pointer-events: none;
+  z-index: 2;
+  will-change: transform;
+  mix-blend-mode: screen;
+}
+
+/* ── Shape 1: organic pebble blob (top-centre) ─────────────────── */
+.hero-orb--1 {
+  width: 260px; height: 240px;
+  top: -50px; left: 18%;
+  opacity: 0.88;
+  border-radius: 62% 38% 55% 45% / 48% 70% 30% 52%;
+  background: radial-gradient(ellipse at 35% 40%,
+    rgba(200, 240, 49, 0.98) 0%,
+    rgba(200, 240, 49, 0.58) 38%,
+    rgba(200, 240, 49, 0) 72%);
+  filter: blur(44px);
+  animation: hero-orb-float-a 14s ease-in-out infinite;
+}
+
+/* ── Shape 2: elongated diagonal streak (mid-left) ─────────────── */
+.hero-orb--2 {
+  width: 160px; height: 380px;
+  top: 38%; left: 2%;
+  opacity: 0.72;
+  border-radius: 50% 50% 50% 50% / 30% 30% 70% 70%;
+  background: radial-gradient(ellipse at 50% 40%,
+    rgba(200, 240, 49, 0.95) 0%,
+    rgba(200, 240, 49, 0.50) 40%,
+    rgba(200, 240, 49, 0) 75%);
+  filter: blur(50px);
+  animation: hero-orb-float-b 18s ease-in-out infinite;
+}
+
+/* ── Shape 3: multi-lobed amoeba (bottom-right, largest) ───────── */
+.hero-orb--3 {
+  width: 520px; height: 420px;
+  bottom: -110px; right: 2%;
+  opacity: 0.92;
+  border-radius: 70% 30% 58% 42% / 40% 65% 35% 60%;
+  background: radial-gradient(ellipse at 60% 55%,
+    rgba(200, 240, 49, 0.98) 0%,
+    rgba(200, 240, 49, 0.62) 32%,
+    rgba(200, 240, 49, 0.20) 60%,
+    rgba(200, 240, 49, 0) 80%);
+  filter: blur(54px);
+  animation: hero-orb-float-c 22s ease-in-out infinite;
+}
+
+/* Keyframes — each preserves the orb's static rotation/scale on top of
+   the float so animations don't reset shape orientation. */
+@keyframes hero-orb-float-a {
+  0%, 100% { transform: rotate(-18deg) translate(0, 0); }
+  50%      { transform: rotate(-18deg) translate(28px, 22px); }
+}
+@keyframes hero-orb-float-b {
+  0%, 100% { transform: rotate(32deg)  translate(0, 0); }
+  50%      { transform: rotate(32deg)  translate(-22px, -18px); }
+}
+@keyframes hero-orb-float-c {
+  0%, 100% { transform: rotate(15deg)  translate(0, 0)        scale(1); }
+  50%      { transform: rotate(15deg)  translate(-30px, -20px) scale(1.04); }
+}
+
+/* Hero background image layer — sits behind the orbs + text, above the
+   slide's flat dark fill. Two children:
+     .hero-bg__image    — the actual background image (cover-fit)
+     .hero-bg__overlay  — gradient overlay that darkens edges + bottom
+                          so the headline + lead stay readable
+
+   Until /images/hero-bg.jpg is dropped in, the placeholder gradient on
+   .hero-bg__image keeps the layout looking intentional. Swap by setting
+   `--hero-bg-image: url('/images/hero-bg.jpg')` on .hero-bg, or just
+   editing the background shorthand on .hero-bg__image directly. */
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+.hero-bg__image {
+  position: absolute;
+  inset: 0;
+  background-image: url('/images/bg-1.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+/* Darken the edges + bottom so headline + lead always have enough
+   contrast against whatever image is dropped in. */
+.hero-bg__overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(120% 80% at 50% 35%, transparent 35%, rgba(0,0,0,0.55) 100%),
+    linear-gradient(180deg, rgba(15,16,20,0.55) 0%, rgba(15,16,20,0.25) 35%, rgba(15,16,20,0.65) 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-orb { animation: none; }
+}
+
+/* Mobile: scale orbs down so they don't overwhelm the cramped viewport. */
+@media (max-width: 1023px) {
+  .hero-orb--1 { width: 180px; height: 180px; top: -20px; left: 8%; }
+  .hero-orb--2 { width: 160px; height: 160px; top: 35%; left: -30px; }
+  .hero-orb--3 { width: 300px; height: 300px; bottom: -60px; right: -40px; }
+  .hero-center__h1   { margin-top: 16px; }
+  .hero-center__lead { margin-top: 18px; }
+  .hero-center__cta  { margin-top: 24px; }
+}
+
 .marquee {
   width: 100vw;
   background: #C8F031;
@@ -687,82 +888,121 @@
 
 /* Bottom slide nav bar — background follows the active slide variant
    so the iPhone home-indicator "safe area" matches the surrounding bg. */
-.slides-footer {
+/* Vertical slide nav: fixed to the right edge of the viewport, vertically
+   centred. Just dots — no counter, no arrows. Stays out of the way on
+   mobile (very thin column) and decorative on desktop. */
+.slides-rail {
   position: fixed;
-  bottom: 0; left: 0; right: 0;
-  height: calc(72px + env(safe-area-inset-bottom));
-  padding-top: 0;
-  padding-bottom: env(safe-area-inset-bottom);
-  padding-left: clamp(16px, 4vw, 40px);
-  padding-right: clamp(16px, 4vw, 40px);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  z-index: 20;
-  background: #FFFFFF;
-  border-top: 1px solid #E5E7EB;
-  transition: background 250ms ease, border-color 250ms ease, color 250ms ease;
+  top: 50%;
+  right: clamp(14px, 1.6vw, 28px);
+  transform: translateY(-50%);
+  z-index: 25;
+  pointer-events: none; /* the <ol> below re-enables clicks */
 }
-.slides-body.slide-tint-active .slides-footer { background: #C8F031; border-top-color: rgba(15, 16, 20, 0.08); }
-.slides-body.slide-dark-active .slides-footer { background: #0F1014; border-top-color: rgba(255, 255, 255, 0.1); color: #FFFFFF; }
-.slides-counter {
-  font-variant-numeric: tabular-nums;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  color: #6B6E73;
-}
-.slides-body.slide-dark-active .slides-counter { color: rgba(255, 255, 255, 0.65); }
-.slides-dots {
+.slides-rail .slides-dots {
+  pointer-events: auto;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 14px;
   list-style: none;
-  margin: 0; padding: 0;
+  margin: 0; padding: 8px 0;
 }
+/* Slide-nav items: vertical dashes (thin vertical bars) stacked along
+   the right rail. Active dash widens slightly + grows taller and lights
+   up in the active-variant accent colour. Class name stays `.slides-dot`
+   to keep the JS hook unchanged. */
 .slides-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 999px;
-  /* Outline style — inactive dots are visible on any background via their
-     1.5 px border. Active dot fills solid. */
-  background: transparent;
-  border: 1.5px solid #6B6E73;
+  width: 2px;
+  height: 18px;
+  border: 0;
+  border-radius: 2px;
+  background: #6B6E73;
   padding: 0;
   cursor: pointer;
-  transition: background 200ms ease, border-color 200ms ease, transform 200ms ease;
+  transition: background 200ms ease, height 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
+              width 200ms ease, transform 200ms ease;
 }
-.slides-dot:hover { background: #6B6E73; }
+.slides-dot:hover { background: #A3A6AB; height: 22px; }
 .slides-dot[aria-current="true"] {
   background: #0F1014;
-  border-color: #0F1014;
-  transform: scale(1.2);
+  height: 28px;
+  width: 3px;
 }
-/* On dark slides — outline white-ish, active goes to lime. */
-.slides-body.slide-dark-active .slides-dot { border-color: rgba(255, 255, 255, 0.6); }
-.slides-body.slide-dark-active .slides-dot:hover { background: rgba(255, 255, 255, 0.6); }
+/* Variants: dark slides → lime active dash; tint slides keep graphite. */
+.slides-body.slide-dark-active .slides-dot { background: rgba(255, 255, 255, 0.45); }
+.slides-body.slide-dark-active .slides-dot:hover { background: rgba(255, 255, 255, 0.75); }
 .slides-body.slide-dark-active .slides-dot[aria-current="true"] {
   background: #C8F031;
-  border-color: #C8F031;
 }
-.slides-arrows {
-  display: flex;
-  gap: 8px;
-}
-.slides-arrow {
-  width: 40px; height: 40px;
-  display: inline-flex; align-items: center; justify-content: center;
-  border-radius: 999px;
+
+/* Scroll hint — mouse icon with animated wheel. Sits centred at the
+   bottom of slide 1, fades out as soon as the user advances past it
+   (motion.ts toggles .is-hidden on every slidechange). */
+.scroll-hint {
+  position: fixed;
+  bottom: calc(28px + env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
   border: 0;
-  background: #F3F4F2;
-  color: #0F1014;
+  padding: 8px 12px;
   cursor: pointer;
-  transition: background 150ms ease, transform 150ms ease;
+  z-index: 24;
+  color: #0F1014;
+  opacity: 0.85;
+  transition: opacity 350ms ease, transform 350ms ease, bottom 250ms ease;
 }
-.slides-arrow:hover:not([disabled]) { background: #C8F031; transform: scale(1.05); }
-.slides-arrow[disabled] { opacity: 0.35; cursor: not-allowed; }
-.slides-body.slide-dark-active .slides-arrow { background: rgba(255, 255, 255, 0.1); color: #FFFFFF; }
-.slides-body.slide-dark-active .slides-arrow:hover:not([disabled]) { background: #C8F031; color: #0F1014; }
+/* On pages whose first slide has a marquee strip (currently just the home
+   hero), push the hint up so it sits ABOVE the marquee instead of being
+   sandwiched between it and the bottom edge. The marquee is ~60 px tall
+   and sits at bottom: 72 px. */
+.slides-body:has(.hero-slide) .scroll-hint {
+  bottom: calc(148px + env(safe-area-inset-bottom));
+}
+.scroll-hint:hover { opacity: 1; }
+.scroll-hint.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(8px);
+}
+.slides-body.slide-dark-active .scroll-hint { color: #FFFFFF; }
+.scroll-hint__mouse {
+  width: 22px;
+  height: 36px;
+  border: 2px solid currentColor;
+  border-radius: 12px;
+  display: inline-flex;
+  justify-content: center;
+  padding-top: 6px;
+  box-sizing: border-box;
+}
+.scroll-hint__wheel {
+  width: 3px;
+  height: 7px;
+  background: currentColor;
+  border-radius: 2px;
+  animation: scroll-hint-wheel 1.8s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+.scroll-hint__label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+@keyframes scroll-hint-wheel {
+  0%   { transform: translateY(0);   opacity: 1; }
+  60%  { transform: translateY(10px); opacity: 0; }
+  61%  { transform: translateY(0);   opacity: 0; }
+  100% { transform: translateY(0);   opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scroll-hint__wheel { animation: none; }
+}
 
 /* Minimalist card variant used inside slides */
 .mute-card {
@@ -903,45 +1143,35 @@
 body:has(#mobile-menu-toggle:checked) { overflow: hidden; }
 
 /* ──────────────────────────────────────────────────────────────────
-   Mobile (≤ 768 px). Aggressively shrink everything; allow internal
-   vertical scroll so content that overflows is reachable. The slide
-   engine ignores vertical touch swipes on mobile (see slide-engine.ts),
-   so vertical = native scroll, horizontal = slide navigation.
+   Mobile + tablet (≤ 1023 px). Single-column layout, content scaled
+   for narrow viewports. Aligns with Tailwind's `lg:` breakpoint
+   (min-width: 1024 px) — anything below that should be single-column.
+   Internal vertical scroll is enabled on every viewport; the slide
+   engine advances slides only when the user pushes past the edge.
    ────────────────────────────────────────────────────────────────── */
-@media (max-width: 768px) {
+@media (max-width: 1023px) {
   .slides-header {
     height: calc(72px + env(safe-area-inset-top));
     padding-top: env(safe-area-inset-top);
     padding-left: 16px;
     padding-right: 16px;
   }
-  .slides-footer {
-    height: calc(64px + env(safe-area-inset-bottom));
-    padding-bottom: env(safe-area-inset-bottom);
-    padding-left: 12px;
-    padding-right: 12px;
-  }
 
   .slide {
-    /* On mobile the slide content is a tight, vertically-centered cluster
-       — like a classic landing-page hero. align-content: safe center keeps
-       the cluster mid-screen; if it ever overflows, it falls back to top.
-       Padding clears the 72-px header (+ notch) and 64-px footer (+ home
-       indicator) with ~32–56 px of visual breathing room. */
+    /* The slide content is a tight, vertically-centred cluster — like
+       a classic landing-page hero. safe center keeps the cluster
+       mid-screen; if it overflows, falls back to start-aligned. */
     padding-top:    calc(96px + env(safe-area-inset-top));
-    padding-bottom: calc(120px + env(safe-area-inset-bottom));
+    padding-bottom: calc(64px + env(safe-area-inset-bottom));
     padding-left:   20px;
-    padding-right:  20px;
+    padding-right:  56px; /* room for right-rail dots */
     align-content: safe center;
-    overflow-y: auto;
-    overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
-    overscroll-behavior-y: contain;
   }
-  /* Hero on mobile reserves additional room for the marquee that sits
-     just above the footer. */
+  /* Hero reserves additional room for the marquee strip that sits
+     near the bottom. */
   .slide.hero-slide {
-    padding-bottom: calc(170px + env(safe-area-inset-bottom));
+    padding-bottom: calc(120px + env(safe-area-inset-bottom));
     padding-top:    calc(96px + env(safe-area-inset-top));
   }
 
@@ -1046,16 +1276,6 @@ body:has(#mobile-menu-toggle:checked) { overflow: hidden; }
   }
   .slide .lime-card__check { justify-content: flex-start; }
 
-  /* Bottom slide-nav on mobile: only dots. Counter + arrows removed. */
-  .slides-counter,
-  .slides-arrows { display: none !important; }
-  .slides-footer { justify-content: center; }
-
-  /* Bottom slide-nav on mobile: only dots. Counter + arrows removed. */
-  .slides-counter,
-  .slides-arrows { display: none !important; }
-  .slides-footer { justify-content: center; }
-
   /* Display headings — much smaller min so long copy doesn't overflow.
      6.5vw on a 360-px-wide viewport ≈ 23 px which is fine. */
   .slide h1.h-display { font-size: clamp(1.625rem, 6.5vw, 2.75rem); line-height: 1.06; }
@@ -1093,12 +1313,11 @@ body:has(#mobile-menu-toggle:checked) { overflow: hidden; }
   .marquee__item { gap: 28px; }
   .marquee__star { width: 12px; height: 12px; }
 
-  /* Bottom slide-nav: smaller dots + smaller arrows. */
-  .slides-dot { width: 8px; height: 8px; }
-  .slides-dot[aria-current="true"] { transform: scale(1.4); }
-  .slides-counter { font-size: 11px; }
-  .slides-arrow { width: 32px; height: 32px; }
-  .slides-arrow svg { width: 14px; height: 14px; }
+  /* Right-rail dashes: a touch shorter on narrow screens. */
+  .slides-dot { width: 2px; height: 14px; }
+  .slides-dot[aria-current="true"] { height: 22px; width: 3px; }
+  .slides-rail { right: 10px; }
+  .slides-rail .slides-dots { gap: 10px; }
 
   /* The since/cta circular badges are decorative — hide on mobile. */
   .since-badge, .cta-badge { display: none !important; }
@@ -1111,23 +1330,10 @@ body:has(#mobile-menu-toggle:checked) { overflow: hidden; }
    typography, etc.) but apply the same generous slide bottom padding as
    mobile AND enable internal vertical scroll so tall slides (e.g. the
    contact form) don't get clipped by the slide's overflow:hidden. */
-@media (min-width: 769px) and (max-width: 1024px) {
-  .slide {
-    padding-bottom: 128px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior-y: contain;
-    align-content: safe center;
-  }
-  .slide.hero-slide { padding-bottom: 170px; }
-}
-
 /* Very short viewports (landscape phones, tiny laptops). Hide non-essential
    decorative bits so the focal content fits. */
 @media (max-height: 640px) {
   .slides-header { height: 52px; }
-  .slides-footer { height: 52px; }
   .slide { padding-top: 60px; padding-bottom: 60px; }
   /* Hide the hero marquee on very short screens. */
   .slide .marquee { display: none; }

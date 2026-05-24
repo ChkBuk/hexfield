@@ -128,20 +128,60 @@ export class SlideEngine {
     });
   }
 
+  /** Wheel: scroll-then-advance. The slide scrolls vertically as normal;
+   *  only when the user keeps scrolling past the top or bottom edge do we
+   *  advance to the previous/next slide. Matches the touch handler's
+   *  boundary-aware behaviour so the same UX applies on every device. */
   private onWheel = (e: WheelEvent): void => {
     if (this.isInputFocused()) return;
     if (this.isAnimating) { e.preventDefault(); return; }
-    const dominant = Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
-    if (Math.abs(dominant) < 2) return;
+
+    const dy = e.deltaY;
+    const dx = e.deltaX;
+    if (Math.abs(dy) < 2 && Math.abs(dx) < 2) return;
+
+    const slide = this.slides[this.currentIndex];
+    if (!slide) return;
+
+    // Horizontal wheel (trackpad two-finger) always advances.
+    if (Math.abs(dx) > Math.abs(dy)) {
+      e.preventDefault();
+      this.wheelAccumulator += dx;
+      this.scheduleWheelReset();
+      this.maybeAdvance();
+      return;
+    }
+
+    // Vertical wheel: let the slide scroll internally until it hits a boundary.
+    const atTop    = slide.scrollTop <= 1;
+    const atBottom = slide.scrollTop + slide.clientHeight >= slide.scrollHeight - 1;
+    const pushingDown = dy > 0 && atBottom;
+    const pushingUp   = dy < 0 && atTop;
+
+    if (!pushingDown && !pushingUp) {
+      // There's room to scroll within the slide — don't hijack.
+      // Reset accumulator so old over-scroll attempts don't carry over.
+      this.wheelAccumulator = 0;
+      return;
+    }
+
     e.preventDefault();
-    this.wheelAccumulator += dominant;
+    this.wheelAccumulator += dy;
+    this.scheduleWheelReset();
+    this.maybeAdvance();
+  };
+
+  private scheduleWheelReset(): void {
     window.clearTimeout(this.wheelResetTimer);
     this.wheelResetTimer = window.setTimeout(() => { this.wheelAccumulator = 0; }, 220);
+  }
+
+  private maybeAdvance(): void {
     if (Math.abs(this.wheelAccumulator) > this.opts.wheelThreshold) {
       this.wheelAccumulator > 0 ? this.next() : this.prev();
       this.wheelAccumulator = 0;
     }
-  };
+  }
 
   private onTouchStart = (e: TouchEvent): void => {
     this.touchStartX = e.touches[0].clientX;
@@ -241,12 +281,16 @@ export class SlideEngine {
       : 'none';
     this.container.style.transform = `translate3d(-${this.currentIndex * 100}vw, 0, 0)`;
 
-    // Hide off-screen slides from tab order + AT.
+    // Hide off-screen slides from tab order + AT. Reset their scroll so
+    // the user always lands at the top of the slide they navigated to.
     this.slides.forEach((s, i) => {
       const isCurrent = i === this.currentIndex;
       if (isCurrent) {
         s.removeAttribute('inert');
         s.removeAttribute('aria-hidden');
+        // Tiny delay so the just-navigated-from slide's scroll position
+        // isn't visible during the transition.
+        window.setTimeout(() => { s.scrollTop = 0; }, animate ? this.opts.duration / 2 : 0);
       } else {
         s.setAttribute('inert', '');
         s.setAttribute('aria-hidden', 'true');

@@ -11,6 +11,7 @@ const marqueeItems = [
   'Oracle · PostgreSQL', 'System Design', 'SEO', 'Adelaide ↔ Worldwide',
 ];
 
+
 // What I Do — three-card summary.
 const offers = [
   {
@@ -58,28 +59,32 @@ const slideCount = 5;
 
   <!-- ─── Slide 1: Hero (DARK) ─────────────────────────────────────── -->
   <section class="slide slide-dark hero-slide" data-variant="dark">
-    <div class="slide-inner">
-      <p class="slide-eyebrow">{SITE.tagline}</p>
-      <div class="grid lg:grid-cols-12 gap-10 items-end mt-4">
-        <div class="lg:col-span-9">
-          <h1 class="h-display">
-            From <span class="hl-pill">Adelaide</span><br/>
-            to the world<br/>
-            One developer,<br/>
-            full-stack mastery
-          </h1>
-        </div>
-        <div class="lg:col-span-3 flex flex-col justify-end gap-6">
-          <div class="hero-lead">
-            <p class="lead" style="font-size: 0.95rem;">Forms. Websites. Systems. Solutions.</p>
-            <p class="lead" style="font-size: 0.95rem; margin-top: 8px;">Built end-to-end by one expert, for your entire business.</p>
-          </div>
-          <a href="/contact/" class="btn-pill-lime self-start">
-            Get a free quote
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M7 17 L17 7 M9 7 H17 V15" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </a>
-        </div>
-      </div>
+    <!-- Decorative lime "spotlight" orbs floating behind the content.
+         Heavy blur + slow float animation. Pure CSS, aria-hidden. -->
+    <div class="hero-orb hero-orb--1" aria-hidden="true"></div>
+    <div class="hero-orb hero-orb--2" aria-hidden="true"></div>
+    <div class="hero-orb hero-orb--3" aria-hidden="true"></div>
+
+    <!-- Background image: dark textured ridges. Loads from
+         /images/hero-bg.jpg; a CSS gradient placeholder approximates
+         the mood until the real file is dropped in. Dark overlay below
+         keeps the headline + lead readable on any image. -->
+    <div class="hero-bg" data-hero-bg aria-hidden="true">
+      <div class="hero-bg__image"></div>
+      <div class="hero-bg__overlay"></div>
+    </div>
+
+    <div class="slide-inner hero-center">
+      <p class="slide-eyebrow">Adelaide, Australia — Full-stack development</p>
+      <h1 class="h-display hero-center__h1">
+        One developer.<br/>
+        Your <span class="hl-pill">entire</span> stack.
+      </h1>
+      <p class="lead hero-center__lead">Forms, websites, internal tools, integrations — built end-to-end by one expert, shipped fast.</p>
+      <a href="/contact/" class="btn-pill-lime hero-center__cta">
+        Get a free quote
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M7 17 L17 7 M9 7 H17 V15" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
     </div>
 
     <!-- Marquee at the bottom edge of slide 1 -->
