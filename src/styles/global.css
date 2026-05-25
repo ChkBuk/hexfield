@@ -153,14 +153,17 @@
     var(--header-bg, #FFFFFF) 78%,
     var(--header-bg, #FFFFFF) 80%
   );
-  border-bottom: 1px solid #E5E7EB;
-  transition: background 250ms ease, border-color 250ms ease;
+  /* No border-bottom — earlier 1-px line read as a stray outline below
+     the safe-area + above the slide content. Page-loader handles the
+     visual divider when a navigation is in progress. */
+  border-bottom: 0;
+  transition: background 250ms ease;
 }
 /* Header background dynamically follows the active slide variant. The
    --header-bg variable feeds the linear-gradient so only the side bands
    change colour; the middle 50 % stays transparent. */
-.slides-body.slide-tint-active .slides-header { --header-bg: #C8F031; border-bottom-color: rgba(15, 16, 20, 0.08); }
-.slides-body.slide-dark-active .slides-header { --header-bg: #0F1014; border-bottom-color: rgba(255, 255, 255, 0.1); }
+.slides-body.slide-tint-active .slides-header { --header-bg: #C8F031; }
+.slides-body.slide-dark-active .slides-header { --header-bg: #0F1014; }
 
 /* Default header (light slides) */
 .slides-header .nav-link {
@@ -307,9 +310,7 @@
     radial-gradient(ellipse 80% 60% at 80% 70%, rgba(200, 240, 49, 0.04) 0%, transparent 70%);
 }
 
-/* Hero slide reserves extra room at the bottom for the absolutely-
-   positioned marquee that lives only on slide 1 of the homepage. */
-.slide.hero-slide { padding-bottom: 168px; }
+/* (Marquee removed; .hero-slide uses the same padding as a regular slide.) */
 
 /* Decorative slide-corner accents removed at user request. The .has-accent
    class is kept harmless so pages that still declare it don't break. */
@@ -590,39 +591,10 @@
   .hero-center__cta  { margin-top: 24px; }
 }
 
-.marquee {
-  width: 100vw;
-  background: #C8F031;
-  color: #0F1014;
-  overflow: hidden;
-  border-block: 1px solid rgba(15, 16, 20, 0.08);
-}
-.marquee__track {
-  display: flex;
-  gap: 56px;
-  align-items: center;
-  padding: 18px 28px;
-  width: max-content;
-  animation: marquee-scroll 28s linear infinite;
-  font-weight: 700;
-  font-size: 18px;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-  white-space: nowrap;
-}
-.marquee__track:hover { animation-play-state: paused; }
-.marquee__item { display: inline-flex; align-items: center; gap: 56px; }
-.marquee__star {
-  width: 18px; height: 18px;
-  flex-shrink: 0;
-  display: inline-block;
-}
-@keyframes marquee-scroll {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .marquee__track { animation: none; }
+/* Hero byline (small tagline that sits between the lead and the CTA). */
+.hero-center__byline {
+  margin-top: 22px;
+  margin-bottom: 4px;
 }
 
 /* ── Circular "SINCE 20XX" badge with curved text ───────────────── */
@@ -971,13 +943,7 @@
   opacity: 0.85;
   transition: opacity 350ms ease, transform 350ms ease, bottom 250ms ease;
 }
-/* On pages whose first slide has a marquee strip (currently just the home
-   hero), push the hint up so it sits ABOVE the marquee instead of being
-   sandwiched between it and the bottom edge. The marquee is ~60 px tall
-   and sits at bottom: 72 px. */
-.slides-body:has(.hero-slide) .scroll-hint {
-  bottom: calc(148px + env(safe-area-inset-bottom));
-}
+/* (Marquee removed — scroll-hint uses the standard bottom offset.) */
 .scroll-hint:hover { opacity: 1; }
 .scroll-hint.is-hidden {
   opacity: 0;

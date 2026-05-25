@@ -6,10 +6,6 @@ import { breadcrumbSchema, faqSchema } from '~/lib/schema';
 const title = `${SITE.name} | ${SITE.tagline}`;
 const description = SITE.description;
 
-const marqueeItems = [
-  'Forms Digitalization', 'Web Design', 'MERN Stack', 'Java + Spring Boot',
-  'Oracle · PostgreSQL', 'System Design', 'SEO', 'Adelaide ↔ Worldwide',
-];
 
 
 // What I Do — three-card summary.
@@ -75,32 +71,18 @@ const slideCount = 5;
     </div>
 
     <div class="slide-inner hero-center">
-      <p class="slide-eyebrow">Adelaide, Australia — Full-stack development</p>
       <h1 class="h-display hero-center__h1">
         One developer<br/>
         Your <span class="hl-pill">entire</span> stack
       </h1>
       <p class="lead hero-center__lead">Forms, websites, internal tools, integrations — built end-to-end by one expert, shipped fast.</p>
+      <!-- Tagline sits just above the CTA so it reads as a "by-line"
+           for the call to action rather than as a section header. -->
+      <p class="slide-eyebrow hero-center__byline">Adelaide, Australia — Full-stack development</p>
       <a href="/contact/" class="btn-pill-lime hero-center__cta">
         Get a free quote
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M7 17 L17 7 M9 7 H17 V15" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </a>
-    </div>
-
-    <!-- Marquee at the bottom edge of slide 1 -->
-    <div style="position: absolute; left: 0; right: 0; bottom: 72px;">
-      <div class="marquee">
-        <div class="marquee__track">
-          {[...marqueeItems, ...marqueeItems].map((item) => (
-            <span class="marquee__item">
-              {item}
-              <svg class="marquee__star" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M12 2 L13.5 9.5 L21 11 L13.5 12.5 L12 22 L10.5 12.5 L3 11 L10.5 9.5 Z" fill="#0F1014"/>
-              </svg>
-            </span>
-          ))}
-        </div>
-      </div>
     </div>
   </section>
 
