@@ -1,7 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2896 2896" fill="none">
-  <rect width="2896" height="2896" fill="#040404"/>
-  <path d="M1581.5 987.512L1716.5 910V1386L1581.5 1461.5V987.512Z" fill="#D9D9D9"/>
-  <path d="M1191 1257.82L1321 1188V1612L1191 1682V1257.82Z" fill="#D9D9D9"/>
-  <path d="M1714.06 1446.78H1716.89V1941.08L1682.95 1925.05L1640.53 1901L1595.28 1874.28V1649.84L1564.17 1665.88L1490.64 1705.95L1439.73 1735.34L1298.33 1812L1408.62 1858.25V1978.48L1329.44 1933.06L1284.19 1909.02L1241.77 1884.97L1193.69 1858.25L1190.86 1855.58V1740.69L1216.31 1724.66L1298.33 1679.23L1388.83 1628.47L1541.55 1542.97L1680.12 1465.48L1714.06 1446.78Z" fill="#D4D4D3"/>
-  <rect x="1298" y="1812" width="117" height="174" fill="#040404"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Hexfield "HF" monogram favicon — light mark on the dark brand square.
+       Mirrors src/components/Logo.astro. -->
+  <rect width="100" height="100" rx="22" fill="#0F1014"/>
+  <g transform="translate(11 11) scale(0.78)" fill="#ECECEA">
+    <path fill-rule="evenodd" d="M46 6 L94 6 L94 54 Q94 94 54 94 L6 94 L6 46 Q6 6 46 6 Z M46 17 L83 17 L83 54 Q83 83 54 83 L17 83 L17 46 Q17 17 46 17 Z"/>
+    <path d="M27 28 H37 V74 H27 Z M47 28 H57 V74 H47 Z M47 28 H73 V38 H47 Z M27 45 H72 V55 H27 Z"/>
+  </g>
 </svg>
